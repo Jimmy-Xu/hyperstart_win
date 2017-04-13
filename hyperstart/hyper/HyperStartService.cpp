@@ -101,7 +101,7 @@ void CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
         struct tm time_info;
         localtime_s(&time_info, &calendar_time);
         strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", &time_info);
-        m_logFile << buffer << ": HyperStartService Started" << endl;
+        m_logFile << fmt::format("{0} : HyperStartService Started", buffer).c_str() << endl;
     }
 
     // Log a service start message to the Application log.
@@ -125,9 +125,12 @@ void CHyperStartService::ServiceWorkerThread(void)
     // Periodically check if the service is stopping.
     while (!m_fStopping)
     {
-        // Perform main service function here...
+        WriteEventLogEntry(L"Before stop", EVENTLOG_INFORMATION_TYPE);
 
+        // Perform main service function here...
         ::Sleep(2000);  // Simulate some lengthy operations.
+
+        WriteEventLogEntry(L"Stop now", EVENTLOG_INFORMATION_TYPE);
     }
 
     // Signal the stopped event.
