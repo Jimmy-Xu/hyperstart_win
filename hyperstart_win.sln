@@ -10,6 +10,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "serial", "serial\serial.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_serial", "serial\test_serial.vcxproj", "{92EE7E58-C737-41F9-B795-9B6ACF6AB0B8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libfmt", "libfmt", "{8946AFB9-C63D-4AA6-A749-4B28F73CE5A8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fmt", "fmt\fmt.vcxproj", "{29F70FC1-87AF-3767-BC85-0180C72B0D95}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_fmt", "fmt\test_fmt.vcxproj", "{827170F9-B18C-4E7A-BE24-06C687601D0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -42,6 +48,18 @@ Global
 		{92EE7E58-C737-41F9-B795-9B6ACF6AB0B8}.Release|Win32.Build.0 = Release|Win32
 		{92EE7E58-C737-41F9-B795-9B6ACF6AB0B8}.Release|x64.ActiveCfg = Release|x64
 		{92EE7E58-C737-41F9-B795-9B6ACF6AB0B8}.Release|x64.Build.0 = Release|x64
+		{29F70FC1-87AF-3767-BC85-0180C72B0D95}.Debug|Win32.ActiveCfg = Debug|Win32
+		{29F70FC1-87AF-3767-BC85-0180C72B0D95}.Debug|Win32.Build.0 = Debug|Win32
+		{29F70FC1-87AF-3767-BC85-0180C72B0D95}.Debug|x64.ActiveCfg = Debug|x64
+		{29F70FC1-87AF-3767-BC85-0180C72B0D95}.Release|Win32.ActiveCfg = Release|Win32
+		{29F70FC1-87AF-3767-BC85-0180C72B0D95}.Release|Win32.Build.0 = Release|Win32
+		{29F70FC1-87AF-3767-BC85-0180C72B0D95}.Release|x64.ActiveCfg = Release|x64
+		{827170F9-B18C-4E7A-BE24-06C687601D0F}.Debug|Win32.ActiveCfg = Debug|x64
+		{827170F9-B18C-4E7A-BE24-06C687601D0F}.Debug|x64.ActiveCfg = Debug|x64
+		{827170F9-B18C-4E7A-BE24-06C687601D0F}.Debug|x64.Build.0 = Debug|x64
+		{827170F9-B18C-4E7A-BE24-06C687601D0F}.Release|Win32.ActiveCfg = Release|x64
+		{827170F9-B18C-4E7A-BE24-06C687601D0F}.Release|x64.ActiveCfg = Release|x64
+		{827170F9-B18C-4E7A-BE24-06C687601D0F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,5 +67,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A8517FB2-C74E-43BD-B3C6-B05D3FC11ECD} = {C7E35674-1D8C-4389-93F2-D6F35ED736C5}
 		{92EE7E58-C737-41F9-B795-9B6ACF6AB0B8} = {C7E35674-1D8C-4389-93F2-D6F35ED736C5}
+		{29F70FC1-87AF-3767-BC85-0180C72B0D95} = {8946AFB9-C63D-4AA6-A749-4B28F73CE5A8}
+		{827170F9-B18C-4E7A-BE24-06C687601D0F} = {8946AFB9-C63D-4AA6-A749-4B28F73CE5A8}
 	EndGlobalSection
 EndGlobal

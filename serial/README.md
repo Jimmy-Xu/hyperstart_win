@@ -1,6 +1,9 @@
 test_serial
 =================
 
+https://github.com/wjwwood/serial
+commit `827c4a784dd4fdd35dc391f37ef152eab7c9c9b2` (2017-01-21)
+
 # Usage
 
 ```
