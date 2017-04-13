@@ -1,6 +1,6 @@
 /****************************** Module Header ******************************\
 * Module Name:  SampleService.cpp
-* Project:      CppWindowsService
+* Project:      HyperStartService
 * Copyright (c) Microsoft Corporation.
 * 
 * Provides a sample service class that derives from the service base class - 
@@ -18,13 +18,12 @@
 \***************************************************************************/
 
 #pragma region Includes
-#include "SampleService.h"
+#include "HyperStartService.h"
 #include "ThreadPool.h"
 #pragma endregion
 
-#include <ctime>
 
-CSampleService::CSampleService(PWSTR pszServiceName, 
+CHyperStartService::CHyperStartService(PWSTR pszServiceName, 
                                BOOL fCanStop, 
                                BOOL fCanShutdown, 
                                BOOL fCanPauseContinue)
@@ -42,7 +41,7 @@ CSampleService::CSampleService(PWSTR pszServiceName,
 }
 
 
-CSampleService::~CSampleService(void)
+CHyperStartService::~CHyperStartService(void)
 {
     if (m_hStoppedEvent)
     {
@@ -53,7 +52,7 @@ CSampleService::~CSampleService(void)
 
 
 //
-//   FUNCTION: CSampleService::OnStart(DWORD, LPWSTR *)
+//   FUNCTION: CHyperStartService::OnStart(DWORD, LPWSTR *)
 //
 //   PURPOSE: The function is executed when a Start command is sent to the 
 //   service by the SCM or when the operating system starts (for a service 
@@ -77,26 +76,26 @@ CSampleService::~CSampleService(void)
 //   other solution is to spawn a new thread to perform the main service 
 //   functions, which is demonstrated in this code sample.
 //
-void CSampleService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
+void CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
 {
     // Log a service start message to the Application log.
-    WriteEventLogEntry(L"CppWindowsService in OnStart", 
+    WriteEventLogEntry(L"HyperStartService in OnStart", 
         EVENTLOG_INFORMATION_TYPE);
 
     // Queue the main service function for execution in a worker thread.
-    CThreadPool::QueueUserWorkItem(&CSampleService::ServiceWorkerThread, this);
+    CThreadPool::QueueUserWorkItem(&CHyperStartService::ServiceWorkerThread, this);
 
 
 }
 
 
 //
-//   FUNCTION: CSampleService::ServiceWorkerThread(void)
+//   FUNCTION: CHyperStartService::ServiceWorkerThread(void)
 //
 //   PURPOSE: The method performs the main function of the service. It runs 
 //   on a thread pool worker thread.
 //
-void CSampleService::ServiceWorkerThread(void)
+void CHyperStartService::ServiceWorkerThread(void)
 {
     // Periodically check if the service is stopping.
     while (!m_fStopping)
@@ -112,7 +111,7 @@ void CSampleService::ServiceWorkerThread(void)
 
 
 //
-//   FUNCTION: CSampleService::OnStop(void)
+//   FUNCTION: CHyperStartService::OnStop(void)
 //
 //   PURPOSE: The function is executed when a Stop command is sent to the 
 //   service by SCM. It specifies actions to take when a service stops 
@@ -123,10 +122,10 @@ void CSampleService::ServiceWorkerThread(void)
 //   Be sure to periodically call ReportServiceStatus() with 
 //   SERVICE_STOP_PENDING if the procedure is going to take long time. 
 //
-void CSampleService::OnStop()
+void CHyperStartService::OnStop()
 {
     // Log a service stop message to the Application log.
-    WriteEventLogEntry(L"CppWindowsService in OnStop", 
+    WriteEventLogEntry(L"HyperStartService in OnStop", 
         EVENTLOG_INFORMATION_TYPE);
 
     // Indicate that the service is stopping and wait for the finish of the 

@@ -166,13 +166,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="HyperStartService.cpp" />
     <ClCompile Include="ServiceBase.cpp" />
     <ClCompile Include="ServiceInstaller.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SampleService.h" />
+    <ClInclude Include="HyperStartService.h" />
     <ClInclude Include="ServiceBase.h" />
     <ClInclude Include="ServiceInstaller.h" />
     <ClInclude Include="ThreadPool.h" />

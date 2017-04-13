@@ -21,17 +21,14 @@
     <ClCompile Include="ServiceInstaller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="HyperStartService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HyperStartService.cpp">
+    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SampleService.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ServiceBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -39,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ThreadPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HyperStartService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

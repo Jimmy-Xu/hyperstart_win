@@ -1737,7 +1737,7 @@ ul
 
 <div class=WordSection1>
 
-<h1>SERVICE APPLICATION (<span class=SpellE>CppWindowsService</span>)</h1>
+<h1>SERVICE APPLICATION (<span class=SpellE>HyperStartService</span>)</h1>
 
 <h2>Introduction</h2>
 
@@ -1754,14 +1754,14 @@ your own business requirement.</p>
 Windows Service sample.</p>
 
 <p class=MsoNormal>Step1. After you successfully build the sample project in
-Visual Studio 2008, you will get a service application: CppWindowsService.exe. <o:p></o:p></p>
+Visual Studio 2008, you will get a service application: HyperStartService.exe. <o:p></o:p></p>
 
 <p class=MsoNormal>Step2. Run a command prompt as administrator, navigate to
 the output folder of the sample project, and enter the following command to
 install the service.<o:p></o:p></p>
 
 <p class=MsoNormal><span style='mso-spacerun:yes'>&nbsp;
-</span>CppWindowsService.exe -install<o:p></o:p></p>
+</span>HyperStartService.exe -install<o:p></o:p></p>
 
 <p class=MsoNormal>The service is successfully installed if the process
 outputs:</p>
@@ -1798,7 +1798,7 @@ For example, the error code 0x431 means that the service already exists, and
 you need to uninstall it first. <o:p></o:p></p>
 
 <p class=MsoNormal>Step3. Open Service Management Console (services.msc). You
-should be able to find &quot;<span class=SpellE>CppWindowsService</span> Sample
+should be able to find &quot;<span class=SpellE>HyperStartService</span> Sample
 Service&quot; in the service list.</p>
 
 <p class=MsoNormal><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
@@ -1808,10 +1808,10 @@ Service&quot; in the service list.</p>
 </v:shape><![endif]--><![if !vml]><img width=576 height=412
 src="ReadMe_files/image004.jpg" v:shapes="Picture_x0020_4"><![endif]></span></p>
 
-<p class=MsoNormal>Step4. <span class=GramE>Right-click the CppWindowsService
+<p class=MsoNormal>Step4. <span class=GramE>Right-click the HyperStartService
 service in Service Management Console and select Start to start the service.</span>
 Open Event Viewer, and navigate to Windows Logs / Application. You should be
-able to see this event from <span class=SpellE>CppWindowsService</span> with
+able to see this event from <span class=SpellE>HyperStartService</span> with
 the information:</p>
 
 <p class=MsoNormal><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
@@ -1823,7 +1823,7 @@ src="ReadMe_files/image006.jpg" v:shapes="Picture_x0020_5"><![endif]></span></p>
 
 <p class=MsoNormal>Step5. <span class=GramE>Right-click the service in Service
 Management Console and select Stop to stop the service.</span> You will see
-this new event from <span class=SpellE>CppWindowsService</span> in Event Viewer
+this new event from <span class=SpellE>HyperStartService</span> in Event Viewer
 / Windows Logs / Application with the information:</p>
 
 <p class=MsoNormal><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
@@ -1839,7 +1839,7 @@ in the command prompt running as administrator.<o:p></o:p></p>
 <p class=MsoNormal><o:p>&nbsp;</o:p></p>
 
 <p class=MsoNormal><span style='mso-spacerun:yes'>&nbsp;
-</span>CppWindowsService.exe -remove<o:p></o:p></p>
+</span>HyperStartService.exe -remove<o:p></o:p></p>
 
 <p class=MsoNormal><o:p>&nbsp;</o:p></p>
 
@@ -1861,7 +1861,7 @@ src="ReadMe_files/image010.jpg" v:shapes="Picture_x0020_7"><![endif]></span></p>
 mso-fareast-font-family:ËÎÌו;mso-fareast-theme-font:minor-fareast;mso-hansi-theme-font:
 minor-latin;mso-bidi-font-family:"Times New Roman";mso-bidi-theme-font:minor-bidi;
 font-weight:normal'>Step1. In Visual Studio 2008, add a new Visual C++ / Win32
-/ Win32 Console Application project named <span class=SpellE>CppWindowsService</span>.
+/ Win32 Console Application project named <span class=SpellE>HyperStartService</span>.
 Unselect the &quot;Precompiled header&quot; option in Application Settings of
 the Win32 Application Wizard, and delete stdafx.h, stdafx.cpp, targetver.h
 files after the project is created. <o:p></o:p></span></h3>
@@ -1870,7 +1870,7 @@ files after the project is created. <o:p></o:p></span></h3>
 mso-fareast-font-family:ËÎÌו;mso-fareast-theme-font:minor-fareast;mso-hansi-theme-font:
 minor-latin;mso-bidi-font-family:"Times New Roman";mso-bidi-theme-font:minor-bidi;
 font-weight:normal'>Step2. Define the settings of the service in
-CppWindowsService.cpp.</span></h3>
+HyperStartService.cpp.</span></h3>
 
 <div>
 
@@ -1880,7 +1880,7 @@ style='background:white'><span style='color:green'>// Internal name of the servi
 style='color:black'><o:p></o:p></span></pre><pre style='background:white'><span
 style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span></span><span
 style='color:#CC6633'>#define</span><span style='color:black'> SERVICE_NAME<span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>L</span><span
-style='color:#A31515'>&quot;CppWindowsService&quot;</span><span
+style='color:#A31515'>&quot;HyperStartService&quot;</span><span
 style='color:black'><o:p></o:p></span></pre><pre style='background:white'><span
 style='color:black'><o:p>&nbsp;</o:p></span></pre><pre style='background:white'><span
 style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span></span><span
@@ -1888,7 +1888,7 @@ style='color:green'>// Displayed name of the service</span><span
 style='color:black'><o:p></o:p></span></pre><pre style='background:white'><span
 style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span></span><span
 style='color:#CC6633'>#define</span><span style='color:black'> SERVICE_DISPLAY_NAME<span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp; </span>L</span><span
-style='color:#A31515'>&quot;CppWindowsService Sample Service&quot;</span><span
+style='color:#A31515'>&quot;HyperStartService Sample Service&quot;</span><span
 style='color:black'><o:p></o:p></span></pre><pre style='background:white'><span
 style='color:black'><o:p>&nbsp;</o:p></span></pre><pre style='background:white'><span
 style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span></span><span
@@ -1935,7 +1935,7 @@ any remote server.<o:p></o:p></span></h3>
 mso-fareast-font-family:ËÎÌו;mso-fareast-theme-font:minor-fareast;mso-hansi-theme-font:
 minor-latin;mso-bidi-font-family:"Times New Roman";mso-bidi-theme-font:minor-bidi;
 font-weight:normal'>Step3. Replace the application's entry point (main) in
-CppWindowsService.cpp with the code below. According to the arguments in the
+HyperStartService.cpp with the code below. According to the arguments in the
 command line, the function installs or uninstalls or starts the service by
 calling into different routines that will be declared and implemented in the
 next steps</span></h3>
@@ -2005,7 +2005,7 @@ style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
 style='color:#A31515'>&quot; -remove<span style='mso-spacerun:yes'>&nbsp;&nbsp; </span>to remove the service.\n&quot;</span><span
 style='color:black'>);<o:p></o:p></span></pre><pre style='background:white'><span
 style='color:black'><o:p>&nbsp;</o:p></span></pre><pre style='background:white'><span
-style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style='mso-spacerun:yes'>&nbsp;</span>CSampleService service(SERVICE_NAME);<o:p></o:p></span></pre><pre
+style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style='mso-spacerun:yes'>&nbsp;</span>CHyperStartService service(SERVICE_NAME);<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
 style='color:blue'>if</span><span style='color:black'> (!CServiceBase::Run(service))<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>{<o:p></o:p></span></pre><pre
@@ -2103,11 +2103,11 @@ CServiceBase. The sample <span class=GramE>service logs the service start and
 stop</span> information to the Application log, and shows how to run the main
 function of the service in a thread pool worker thread.<o:p></o:p></p>
 
-<p class=MsoNormal><span class=GramE>CSampleService::OnStart, which is executed
+<p class=MsoNormal><span class=GramE>CHyperStartService::OnStart, which is executed
 when the service starts, calls <span class=SpellE>CServiceBase</span>::<span
 class=SpellE>WriteEventLogEntry</span> to log the service-start information.</span>
 And it calls CThreadPool::QueueUserWorkItem to queue the main service function (<span
-class=SpellE>CSampleService</span>::<span class=SpellE>ServiceWorkerThread</span>)
+class=SpellE>CHyperStartService</span>::<span class=SpellE>ServiceWorkerThread</span>)
 for execution in a worker thread.<o:p></o:p></p>
 
 <p class=MsoNormal>NOTE: A service application is designed to be long running.
@@ -2128,26 +2128,26 @@ functions, which is demonstrated in this code sample.</p>
 <div style='border:solid #D0D2D2 1.5pt;padding:8.0pt 8.0pt 8.0pt 8.0pt'><pre>- C++ code snippet -</pre><pre
 style='background:white'><span style='color:black'><o:p>&nbsp;</o:p></span></pre><pre
 style='background:white'><span style='color:blue'>void</span><span
-style='color:black'> CSampleService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)<o:p></o:p></span></pre><pre
+style='color:black'> CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span>{<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
 style='color:green'>// Log a service start message to the Application log.</span><span
 style='color:black'><o:p></o:p></span></pre><pre style='background:white'><span
 style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>WriteEventLogEntry(L</span><span
-style='color:#A31515'>&quot;CppWindowsService in OnStart&quot;</span><span
+style='color:#A31515'>&quot;HyperStartService in OnStart&quot;</span><span
 style='color:black'>, <o:p></o:p></span></pre><pre style='background:white'><span
 style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>EVENTLOG_INFORMATION_TYPE);<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><o:p>&nbsp;</o:p></span></pre><pre
 style='background:white'><span style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span style='mso-spacerun:yes'>&nbsp;</span></span><span
 style='color:green'>// Queue the main service function for execution in a worker thread.</span><span
 style='color:black'><o:p></o:p></span></pre><pre style='background:white'><span
-style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>CThreadPool::QueueUserWorkItem(&amp;CSampleService::ServiceWorkerThread, </span><span
+style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>CThreadPool::QueueUserWorkItem(&amp;CHyperStartService::ServiceWorkerThread, </span><span
 style='color:blue'>this</span><span style='color:black'>);<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span>}<o:p></o:p></span></pre><pre><o:p>&nbsp;</o:p></pre><pre>- end -</pre></div>
 
 </div>
 
-<p class=MsoNormal><span class=GramE>CSampleService::OnStop, which is executed
+<p class=MsoNormal><span class=GramE>CHyperStartService::OnStop, which is executed
 when the service stops, calls <span class=SpellE>CServiceBase</span>::<span
 class=SpellE>WriteEventLogEntry</span> to log the service-stop information.</span>
 Next, it sets the member varaible m_fStopping as TRUE to indicate that the
@@ -2159,10 +2159,10 @@ is signaled by the <span class=SpellE>m_hStoppedEvent</span> event object.</p>
 <div style='border:solid #D0D2D2 1.5pt;padding:8.0pt 8.0pt 8.0pt 8.0pt'><pre>- C++ code snippet -</pre><pre
 style='background:white'><span style='color:black'><o:p>&nbsp;</o:p></span></pre><pre
 style='background:white'><span style='color:blue'>void</span><span
-style='color:black'> CSampleService::OnStop()<o:p></o:p></span></pre><pre
+style='color:black'> CHyperStartService::OnStop()<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span>{<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>WriteEventLogEntry(L</span><span
-style='color:#A31515'>&quot;CppWindowsService in OnStop&quot;</span><span
+style='color:#A31515'>&quot;HyperStartService in OnStop&quot;</span><span
 style='color:black'>, <o:p></o:p></span></pre><pre style='background:white'><span
 style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>EVENTLOG_INFORMATION_TYPE);<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><o:p>&nbsp;</o:p></span></pre><pre
@@ -2183,7 +2183,7 @@ style='background:white'><span style='color:black'><span style='mso-spacerun:yes
 
 </div>
 
-<p class=MsoNormal>CSampleService::ServiceWorkerThread runs in a thread pool
+<p class=MsoNormal>CHyperStartService::ServiceWorkerThread runs in a thread pool
 worker thread. It performs the main function of the service such as the
 communication with client applications through a named pipe. In order that the
 main function finishes gracefully when the service is about to stop, it should
@@ -2196,7 +2196,7 @@ it cleans up the work and signal the m_hStoppedEvent event object.</p>
 <div style='border:solid #D0D2D2 1.5pt;padding:8.0pt 8.0pt 8.0pt 8.0pt'><pre>- C++ code snippet -</pre><pre
 style='background:white'><span style='color:black'><o:p>&nbsp;</o:p></span></pre><pre
 style='background:white'><span style='color:blue'>void</span><span
-style='color:black'> CSampleService::ServiceWorkerThread(</span><span
+style='color:black'> CHyperStartService::ServiceWorkerThread(</span><span
 style='color:blue'>void</span><span style='color:black'>)<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span>{<o:p></o:p></span></pre><pre
 style='background:white'><span style='color:black'><span style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span

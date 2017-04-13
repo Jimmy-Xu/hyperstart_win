@@ -1,6 +1,6 @@
 /****************************** Module Header ******************************\
 * Module Name:  ThreadPool.h
-* Project:      CppWindowsService
+* Project:      HyperStartService
 * Copyright (c) Microsoft Corporation.
 * 
 * The class was designed by Kenny Kerr. It provides the ability to queue 
@@ -8,7 +8,7 @@
 * 
 * Using the thread pool is simple and feels natural in C++. 
 * 
-* class CSampleService
+* class CHyperStartService
 * {
 * public:
 * 

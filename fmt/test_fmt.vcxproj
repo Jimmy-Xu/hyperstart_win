@@ -18,6 +18,9 @@
       <Project>{29f70fc1-87af-3767-bc85-0180c72b0d95}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{827170f9-b18c-4e7a-be24-06c687601d0f}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

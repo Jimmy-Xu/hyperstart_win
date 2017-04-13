@@ -1,6 +1,6 @@
 /****************************** Module Header ******************************\
 * Module Name:  SampleService.h
-* Project:      CppWindowsService
+* Project:      HyperStartService
 * Copyright (c) Microsoft Corporation.
 * 
 * Provides a sample service class that derives from the service base class - 
@@ -22,15 +22,15 @@
 #include "ServiceBase.h"
 
 
-class CSampleService : public CServiceBase
+class CHyperStartService : public CServiceBase
 {
 public:
 
-    CSampleService(PWSTR pszServiceName, 
+    CHyperStartService(PWSTR pszServiceName, 
         BOOL fCanStop = TRUE, 
         BOOL fCanShutdown = TRUE, 
         BOOL fCanPauseContinue = FALSE);
-    virtual ~CSampleService(void);
+    virtual ~CHyperStartService(void);
 
 protected:
 

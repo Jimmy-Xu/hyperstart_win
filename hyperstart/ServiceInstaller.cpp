@@ -1,6 +1,6 @@
 /****************************** Module Header ******************************\
 * Module Name:  ServiceInstaller.cpp
-* Project:      CppWindowsService
+* Project:      HyperStartService
 * Copyright (c) Microsoft Corporation.
 * 
 * The file implements functions that install and uninstall the service.

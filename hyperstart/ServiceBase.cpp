@@ -1,6 +1,6 @@
 /****************************** Module Header ******************************\
 * Module Name:  ServiceBase.cpp
-* Project:      CppWindowsService
+* Project:      HyperStartService
 * Copyright (c) Microsoft Corporation.
 * 
 * Provides a base class for a service that will exist as part of a service 
