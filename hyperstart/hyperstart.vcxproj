@@ -117,6 +117,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(ProjectDir)hyper;$(ProjectDir)..\fmt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -156,6 +157,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(ProjectDir)hyper;$(ProjectDir)..\fmt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -166,21 +168,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="HyperStartService.cpp" />
-    <ClCompile Include="ServiceBase.cpp" />
-    <ClCompile Include="ServiceInstaller.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="HyperStartService.h" />
-    <ClInclude Include="ServiceBase.h" />
-    <ClInclude Include="ServiceInstaller.h" />
-    <ClInclude Include="ThreadPool.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Documentation\ReadMe.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\fmt\fmt.vcxproj">
+      <Project>{29f70fc1-87af-3767-bc85-0180c72b0d95}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="hyper\HyperStartService.h" />
+    <ClInclude Include="hyper\ServiceBase.h" />
+    <ClInclude Include="hyper\ServiceInstaller.h" />
+    <ClInclude Include="hyper\ThreadPool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="hyper\HyperStartService.cpp" />
+    <ClCompile Include="hyper\Main.cpp" />
+    <ClCompile Include="hyper\ServiceBase.cpp" />
+    <ClCompile Include="hyper\ServiceInstaller.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

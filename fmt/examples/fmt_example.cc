@@ -1,9 +1,12 @@
-#include "format.h"
-#include "ostream.h"
+#include "fmt/format.h"
+#include "fmt/ostream.h"
 #include <iostream>
+#include <time.h>
 
+using namespace std;
 using std::cout;
 using std::endl;
+
 
 class Date {
   int year_, month_, day_;
@@ -33,6 +36,20 @@ void test_itoa() {
   cout << w.str() << endl;
 }
 
+void test_time() {
+    time_t calendar_time = time(NULL);
+
+    char buffer[80];
+    struct tm time_info;
+    localtime_s(&time_info, &calendar_time);
+    strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", &time_info);
+    printf("strftime : %s\n", buffer);
+    
+    char calendar_str[26];
+    ctime_s(calendar_str, sizeof calendar_str, &calendar_time);
+    cout << fmt::format("ctime_s  :{0} \n", calendar_str) << endl;
+}
+
 void test_ostream() {
   std::string s = fmt::format("The date is {}", Date(2012, 12, 9));
   cout << s << endl;
@@ -51,7 +68,9 @@ int main(int argc, char **argv)
   test_itoa();
   test_ostream();
 
-  report_error("file not found: {}", "c:\\test");
+  report_error("file not found: {}", "c:\\test\n");
+
+  test_time();
 
   return 0;
 }

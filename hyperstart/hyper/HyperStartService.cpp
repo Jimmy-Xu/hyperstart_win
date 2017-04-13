@@ -20,8 +20,12 @@
 #pragma region Includes
 #include "HyperStartService.h"
 #include "ThreadPool.h"
+#include "fmt/format.h"
+#include <time.h>
 #pragma endregion
 
+using namespace std;
+using std::endl;
 
 CHyperStartService::CHyperStartService(PWSTR pszServiceName, 
                                BOOL fCanStop, 
@@ -78,9 +82,30 @@ CHyperStartService::~CHyperStartService(void)
 //
 void CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
 {
+    m_logFile.close();
+
+    // TODO(Olster): Read this path from registry of from command line arguments.
+    // This doesn't create non-existent dirs.
+    m_logFile.open("c:\\hyper\\hyperstart.log");
+
+    if (!m_logFile.is_open()) {
+        WriteErrorLogEntry(L"Can't open log file", EVENTLOG_ERROR_TYPE);
+    }
+    else {
+         WriteEventLogEntry(L"Open log file OK", EVENTLOG_INFORMATION_TYPE);
+    }
+    
+    if (m_logFile.is_open()) {
+        time_t calendar_time = time(NULL);
+        char buffer[80];
+        struct tm time_info;
+        localtime_s(&time_info, &calendar_time);
+        strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", &time_info);
+        m_logFile << buffer << ": HyperStartService Started" << endl;
+    }
+
     // Log a service start message to the Application log.
-    WriteEventLogEntry(L"HyperStartService in OnStart", 
-        EVENTLOG_INFORMATION_TYPE);
+    WriteEventLogEntry(L"HyperStartService in OnStart", EVENTLOG_INFORMATION_TYPE);
 
     // Queue the main service function for execution in a worker thread.
     CThreadPool::QueueUserWorkItem(&CHyperStartService::ServiceWorkerThread, this);

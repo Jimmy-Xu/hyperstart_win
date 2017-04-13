@@ -20,7 +20,7 @@
 #pragma once
 
 #include "ServiceBase.h"
-
+#include <fstream>
 
 class CHyperStartService : public CServiceBase
 {
@@ -43,4 +43,13 @@ private:
 
     BOOL m_fStopping;
     HANDLE m_hStoppedEvent;
+
+#ifdef UNICODE
+    using tofstream = std::wofstream;
+#else
+    using tofstream = std::ofstream;
+#endif
+
+    tofstream m_logFile;
+
 };
