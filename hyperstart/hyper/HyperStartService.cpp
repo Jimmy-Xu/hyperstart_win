@@ -21,11 +21,12 @@
 #include "HyperStartService.h"
 #include "ThreadPool.h"
 #include "fmt/format.h"
+#include "serial/serial.h"
 #include <time.h>
+#include <iostream>
 #pragma endregion
 
 using namespace std;
-using std::endl;
 
 CHyperStartService::CHyperStartService(PWSTR pszServiceName, 
                                BOOL fCanStop, 
@@ -96,12 +97,19 @@ void CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
     }
     
     if (m_logFile.is_open()) {
+        //write time to logfile
         time_t calendar_time = time(NULL);
         char buffer[80];
         struct tm time_info;
         localtime_s(&time_info, &calendar_time);
         strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", &time_info);
         m_logFile << fmt::format("{0} : HyperStartService Started", buffer).c_str() << endl;
+
+        //write arguments to logfile
+        for (unsigned int i = 0; i < dwArgc; ++i)
+        {
+            m_logFile << "argv[" << i << "] = '" << lpszArgv[i] << "'" << endl;
+        }
     }
 
     // Log a service start message to the Application log.
@@ -122,17 +130,14 @@ void CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
 //
 void CHyperStartService::ServiceWorkerThread(void)
 {
+    WriteEventLogEntry(L"Enter ServiceWorkerThread", EVENTLOG_INFORMATION_TYPE);
     // Periodically check if the service is stopping.
     while (!m_fStopping)
     {
-        WriteEventLogEntry(L"Before stop", EVENTLOG_INFORMATION_TYPE);
-
         // Perform main service function here...
-        ::Sleep(2000);  // Simulate some lengthy operations.
-
-        WriteEventLogEntry(L"Stop now", EVENTLOG_INFORMATION_TYPE);
+        ReadFromSerialPort();
     }
-
+    WriteEventLogEntry(L"Exit ServiceWorkerThread", EVENTLOG_INFORMATION_TYPE);
     // Signal the stopped event.
     SetEvent(m_hStoppedEvent);
 }
@@ -163,4 +168,111 @@ void CHyperStartService::OnStop()
     {
         throw GetLastError();
     }
+}
+
+void CHyperStartService::enumerate_ports()
+{
+    vector<serial::PortInfo> devices_found = serial::list_ports();
+
+    vector<serial::PortInfo>::iterator iter = devices_found.begin();
+
+    while (iter != devices_found.end())
+    {
+        serial::PortInfo device = *iter++;
+        //output to out.txt
+        cout << fmt::format("({0}, {1}, {2})", device.port.c_str(), device.description.c_str(), device.hardware_id.c_str()) << endl;
+    }
+}
+
+int CHyperStartService::ReadFromSerialPort()
+{
+    std::ofstream out("c:\\hyper\\run.log");
+    std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+    std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+
+    // list all serial port
+    enumerate_ports();
+
+    // Argument 1 is the serial port or enumerate flag
+    //string port(argv[1]);
+    string port("com1");
+
+    // Argument 2 is the baudrate
+    unsigned long baud = 115200;
+
+    // port, baudrate, timeout in milliseconds
+    serial::Serial my_serial(port, baud, serial::Timeout::simpleTimeout(1000));
+
+    cout << "Is the serial port open?";
+    if (my_serial.isOpen())
+        cout << " Yes." << endl;
+    else
+        cout << " No." << endl;
+
+    // Get the Test string
+    int count = 0;
+    string test_string = "Testing.";
+
+    // Test the timeout, there should be 1 second between prints
+    cout << "Timeout == 1000ms, asking for 1 more byte than written." << endl;
+    while (count < 10) {
+        size_t bytes_wrote = my_serial.write(test_string);
+
+        string result = my_serial.read(test_string.length() + 1);
+
+        cout << "Iteration: " << count << ", Bytes written: ";
+        cout << bytes_wrote << ", Bytes read: ";
+        cout << result.length() << ", String read: " << result << endl;
+
+        count += 1;
+    }
+
+    // Test the timeout at 250ms
+    my_serial.setTimeout(serial::Timeout::max(), 250, 0, 250, 0);
+    count = 0;
+    cout << "Timeout == 250ms, asking for 1 more byte than written." << endl;
+    while (count < 10) {
+        size_t bytes_wrote = my_serial.write(test_string);
+
+        string result = my_serial.read(test_string.length() + 1);
+
+        cout << "Iteration: " << count << ", Bytes written: ";
+        cout << bytes_wrote << ", Bytes read: ";
+        cout << result.length() << ", String read: " << result << endl;
+
+        count += 1;
+    }
+
+    // Test the timeout at 250ms, but asking exactly for what was written
+    count = 0;
+    cout << "Timeout == 250ms, asking for exactly what was written." << endl;
+    while (count < 10) {
+        size_t bytes_wrote = my_serial.write(test_string);
+
+        string result = my_serial.read(test_string.length());
+
+        cout << "Iteration: " << count << ", Bytes written: ";
+        cout << bytes_wrote << ", Bytes read: ";
+        cout << result.length() << ", String read: " << result << endl;
+
+        count += 1;
+    }
+
+    // Test the timeout at 250ms, but asking for 1 less than what was written
+    count = 0;
+    cout << "Timeout == 250ms, asking for 1 less than was written." << endl;
+    while (count < 10) {
+        size_t bytes_wrote = my_serial.write(test_string);
+
+        string result = my_serial.read(test_string.length() - 1);
+
+        cout << "Iteration: " << count << ", Bytes written: ";
+        cout << bytes_wrote << ", Bytes read: ";
+        cout << result.length() << ", String read: " << result << endl;
+
+        count += 1;
+    }
+
+    std::cout.rdbuf(coutbuf); //reset to standard output again
+    return 0;
 }

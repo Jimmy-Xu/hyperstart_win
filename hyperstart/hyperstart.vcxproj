@@ -117,7 +117,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(ProjectDir)hyper;$(ProjectDir)..\fmt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)hyper;$(ProjectDir)..\fmt;$(ProjectDir)..\serial\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -157,7 +157,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(ProjectDir)hyper;$(ProjectDir)..\fmt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)hyper;$(ProjectDir)..\fmt;$(ProjectDir)..\serial\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -175,6 +175,9 @@
   <ItemGroup>
     <ProjectReference Include="..\fmt\fmt.vcxproj">
       <Project>{29f70fc1-87af-3767-bc85-0180c72b0d95}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\serial\serial.vcxproj">
+      <Project>{a8517fb2-c74e-43bd-b3c6-b05d3fc11ecd}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
