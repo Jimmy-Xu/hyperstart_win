@@ -31,6 +31,11 @@
 // The password to the service account name
 #define SERVICE_PASSWORD         NULL
 
+// Parameters for Serial Port
+#define DEFAULT_COM_PORT         L"com1"
+
+#define DEFAULT_COM_BAUD         L"115200"
+
 
 std::string GetLastErrorAsString()
 {
@@ -100,7 +105,20 @@ void ErrorExit(LPTSTR lpszFunction)
 //
 int wmain(int argc, wchar_t *argv[])
 {
-    if ((argc > 1) && ((*argv[1] == L'-' || (*argv[1] == L'/'))))
+    if (argc == 3) {
+        wprintf(L"Starting HyperStartService:\n");
+        CHyperStartService service(SERVICE_NAME);
+        if (!CServiceBase::Run(service))
+        {
+            wprintf(L"Service failed to run w/err 0x%08lx\n", GetLastError());
+            std::cout << GetLastErrorAsString().c_str() << std::endl;
+            ErrorExit(TEXT("CServiceBase::Run"));
+        }
+        else {
+            wprintf(L"HyperStartService Started\n");
+        }
+    }
+    else if ((argc > 1) && ((*argv[1] == L'-' || (*argv[1] == L'/'))))
     {
         if (_wcsicmp(L"install", argv[1] + 1) == 0)
         {
@@ -112,7 +130,9 @@ int wmain(int argc, wchar_t *argv[])
                 SERVICE_START_TYPE,         // Service start type
                 SERVICE_DEPENDENCIES,       // Dependencies
                 SERVICE_ACCOUNT,            // Service running account
-                SERVICE_PASSWORD            // Password of the account
+                SERVICE_PASSWORD,           // Password of the account
+                DEFAULT_COM_PORT,           // Serial Port Number
+                DEFAULT_COM_BAUD            // Serial Port Baud
                 );
         }
         else if (_wcsicmp(L"remove", argv[1] + 1) == 0)
@@ -125,16 +145,9 @@ int wmain(int argc, wchar_t *argv[])
     else
     {
         wprintf(L"Parameters:\n");
-        wprintf(L" -install  to install the service.\n");
-        wprintf(L" -remove   to remove the service.\n");
-
-        CHyperStartService service(SERVICE_NAME);
-        if (!CServiceBase::Run(service))
-        {
-            wprintf(L"Service failed to run w/err 0x%08lx\n", GetLastError());
-            std::cout << GetLastErrorAsString().c_str() << std::endl;
-            ErrorExit(TEXT("CServiceBase::Run"));
-        }
+        wprintf(L" <COM> <BAUD>            start service.\n");
+        wprintf(L" -install <COM> <BAUD>   to install the service.\n");
+        wprintf(L" -remove                 to remove the service.\n");
     }
 
     return 0;

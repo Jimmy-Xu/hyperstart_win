@@ -30,6 +30,9 @@
     <ClInclude Include="hyper\ThreadPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="hyper\SerialPortTTY.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hyper\HyperStartService.cpp">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hyper\ServiceInstaller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hyper\SerialPortTTY.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

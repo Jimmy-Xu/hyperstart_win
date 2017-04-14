@@ -182,6 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hyper\HyperStartService.h" />
+    <ClInclude Include="hyper\SerialPortTTY.h" />
     <ClInclude Include="hyper\ServiceBase.h" />
     <ClInclude Include="hyper\ServiceInstaller.h" />
     <ClInclude Include="hyper\ThreadPool.h" />
@@ -189,6 +190,7 @@
   <ItemGroup>
     <ClCompile Include="hyper\HyperStartService.cpp" />
     <ClCompile Include="hyper\Main.cpp" />
+    <ClCompile Include="hyper\SerialPortTTY.cpp" />
     <ClCompile Include="hyper\ServiceBase.cpp" />
     <ClCompile Include="hyper\ServiceInstaller.cpp" />
   </ItemGroup>

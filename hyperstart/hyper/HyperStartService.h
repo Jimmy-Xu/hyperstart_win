@@ -38,8 +38,6 @@ protected:
     virtual void OnStop();
 
     void ServiceWorkerThread(void);
-    void enumerate_ports();
-    int  ReadFromSerialPort();
 
 private:
 

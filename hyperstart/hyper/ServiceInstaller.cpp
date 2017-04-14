@@ -17,7 +17,10 @@
 #pragma region "Includes"
 #include <stdio.h>
 #include <windows.h>
+#include <wchar.h>
+#include <iostream>
 #include "ServiceInstaller.h"
+#include "fmt/format.h"
 #pragma endregion
 
 
@@ -47,7 +50,9 @@ void InstallService(PWSTR pszServiceName,
                     DWORD dwStartType,
                     PWSTR pszDependencies, 
                     PWSTR pszAccount, 
-                    PWSTR pszPassword)
+                    PWSTR pszPassword,
+                    PWSTR pszComPort,
+                    PWSTR pszComBaud)
 {
     wchar_t szPath[MAX_PATH];
     SC_HANDLE schSCManager = NULL;
@@ -58,6 +63,14 @@ void InstallService(PWSTR pszServiceName,
         wprintf(L"GetModuleFileName failed w/err 0x%08lx\n", GetLastError());
         goto Cleanup;
     }
+
+    // Append argument
+    wprintf(L"[Debug]Service's binary(before): %s\n", szPath);
+    wcscat_s(szPath, L" ");
+    wcscat_s(szPath, pszComPort);
+    wcscat_s(szPath, L" ");
+    wcscat_s(szPath, pszComBaud);
+    wprintf(L"[Debug]Service's binary(after): %s\n", szPath);
 
     // Open the local default service control manager database
     schSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CONNECT | 
