@@ -2,10 +2,15 @@
 #include "SerialPortTTY.h"
 #include "serial/serial.h"
 #include "fmt/format.h"
+#include <windows.h>
 #include <fstream>
 #include <iostream>
 #include <time.h>
 #pragma endregion
+
+// for AddSerialPort
+#define COM_PORT_DEV_NAME(n)  TEXT("\\\\?\\ACPI#PNP0501#") TEXT(#n) TEXT("#{4D36E978-E325-11CE-BFC1-08002BE10318}")
+#define COM_PORT_NAME(n)      TEXT("COM") TEXT(#n)
 
 using namespace std;
 
@@ -82,4 +87,11 @@ int SerialPortCommunicate(char* cPort, char* cBaud)
     // Reset to standard output again
     std::cout.rdbuf(coutbuf);
     return 0;
+}
+
+
+// REF: https://social.technet.microsoft.com/Forums/windowsserver/en-US/382b9e64-4823-48f3-b847-1b50f38fd83d/windows-pe-serial-com-support?forum=winserversetup
+void EnsureSerialPort(int nPort)
+{
+    DefineDosDevice(0, COM_PORT_NAME(nPort), COM_PORT_DEV_NAME(nPort));
 }

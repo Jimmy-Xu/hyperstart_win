@@ -2,3 +2,4 @@
 
 void EnumeratePorts();
 int SerialPortCommunicate(char* cPort, char* cBaud);
+void EnsureSerialPort(int nPort);

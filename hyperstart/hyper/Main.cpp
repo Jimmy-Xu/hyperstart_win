@@ -6,6 +6,7 @@
 #include "ServiceInstaller.h"
 #include "ServiceBase.h"
 #include "HyperStartService.h"
+#include "SerialPortTTY.h"
 #pragma endregion
 
 
@@ -105,6 +106,10 @@ void ErrorExit(LPTSTR lpszFunction)
 //
 int wmain(int argc, wchar_t *argv[])
 {
+    wprintf(L"Ensure COM1 and COM2:\n");
+    EnsureSerialPort(1);
+    EnsureSerialPort(2);
+
     if (argc == 3) {
         wprintf(L"Starting HyperStartService:\n");
         CHyperStartService service(SERVICE_NAME);
