@@ -1,5 +1,6 @@
 #pragma once
 
-void EnumeratePorts();
-int SerialPortCommunicate(char* cPort, char* cBaud);
 void EnsureSerialPort(int nPort);
+int SerialPortCommunicate(char* cPort, char* cBaud);
+
+void EnumeratePorts();

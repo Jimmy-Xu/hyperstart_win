@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <time.h>
+#include <tchar.h>
 #pragma endregion
 
 // for AddSerialPort
@@ -89,9 +90,98 @@ int SerialPortCommunicate(char* cPort, char* cBaud)
     return 0;
 }
 
+// convert TCHAR to std::string
+string TChar2Str(TCHAR *pChar) {
+    std::string str;
+#ifndef UNICODE
+    str = pChar;
+#else
+    std::wstring wStr = pChar;
+    str = std::string(wStr.begin(), wStr.end());
+#endif
+    return str;
+}
+
+
+// convert std::string to TCHAR
+TCHAR* Str2TChar(string pStr) {
+    static TCHAR wc[MAX_PATH];
+#ifdef UNICODE
+    _stprintf_s(wc, MAX_PATH, _T("%S"), pStr.c_str());//%S宽字符
+#else
+    _stprintf_s(wc, MAX_PATH, _T("%s"), pStr.c_str());//%s单字符
+#endif
+    return wc;
+}
+
+string LPCWSTR2Str(LPCWSTR wString)
+{
+    wstring tempWstring(wString);
+    string tempString(tempWstring.begin(), tempWstring.end());
+    return tempString;
+}
+
+
+void AddComPort(int i, const char *pPortName) {
+    //TODO
+    cout << "AddComPort: " << pPortName << endl;
+}
+
+
+void ScanSerialPort() {
+    //EmumSerialPort by 'SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\\'
+    const int MAX_PORT = 5;
+    static char* result[MAX_PORT];
+
+    TCHAR sActive[128] = TEXT("SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\\");
+    LPCWSTR valueName = _T("PortName");
+
+    HKEY hKey_tmp = NULL;
+    HKEY hKey = NULL;
+    TCHAR comNum[256];
+    TCHAR comNumEx[256];
+    TCHAR achKey[128];
+    DWORD cbMaxSubKey = 60;
+    DWORD dwType = 20;
+    DWORD dwSize = sizeof(comNum);
+    DWORD retReg;
+
+    retReg = RegOpenKey(HKEY_LOCAL_MACHINE, sActive, &hKey);
+    if (retReg == ERROR_SUCCESS) {
+        for (int i=1; i<= 5; i++) {
+            string curKey = fmt::format("{0}{1}\\Device Parameters\\", TChar2Str(sActive).c_str(), i);
+            cout << "Current Key: " << curKey.c_str() << endl;;
+
+            if (RegOpenKey(HKEY_LOCAL_MACHINE, Str2TChar(curKey), &hKey_tmp) == ERROR_SUCCESS) {
+                retReg = RegQueryValueEx(hKey_tmp, valueName, NULL, &dwType, (BYTE *)&comNumEx, &dwSize);
+                if (retReg == ERROR_SUCCESS) {
+                    cout << TChar2Str(comNumEx).c_str() << endl;
+                    AddComPort(i, TChar2Str(comNumEx).c_str());
+                }
+                RegCloseKey(hKey_tmp);
+            }
+            else if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Str2TChar(curKey), 0, 0, &hKey_tmp) == ERROR_SUCCESS) {
+                retReg = RegQueryValueEx(hKey_tmp, valueName, NULL, &dwType, (BYTE *)&comNumEx, &dwSize);
+                if (retReg == ERROR_SUCCESS) {
+                    cout << TChar2Str(comNumEx).c_str() << endl;
+                    AddComPort(i, TChar2Str(comNumEx).c_str());
+                }
+                RegCloseKey(hKey_tmp);
+            }
+            dwSize = 256; //RegQueryValueEx执行完后，这个参数的值为实际的长度。因此在调用函数之前，要重新设置
+            ZeroMemory(achKey, 128);
+            cbMaxSubKey = 60;
+        }
+    }
+    RegCloseKey(hKey_tmp);
+    RegCloseKey(hKey);
+}
+
 
 // REF: https://social.technet.microsoft.com/Forums/windowsserver/en-US/382b9e64-4823-48f3-b847-1b50f38fd83d/windows-pe-serial-com-support?forum=winserversetup
 void EnsureSerialPort(int nPort)
 {
-    DefineDosDevice(0, COM_PORT_NAME(nPort), COM_PORT_DEV_NAME(nPort));
+    //DefineDosDevice(0, COM_PORT_NAME(nPort), COM_PORT_DEV_NAME(nPort));
+    ScanSerialPort();
+    EnumeratePorts();
 }

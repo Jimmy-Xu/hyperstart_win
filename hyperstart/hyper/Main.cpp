@@ -108,7 +108,7 @@ int wmain(int argc, wchar_t *argv[])
 {
     wprintf(L"Ensure COM1 and COM2:\n");
     EnsureSerialPort(1);
-    EnsureSerialPort(2);
+    //EnsureSerialPort(2);
 
     if (argc == 3) {
         wprintf(L"Starting HyperStartService:\n");

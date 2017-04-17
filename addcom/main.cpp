@@ -157,7 +157,6 @@ int EnumSerialPort2() {
             curKey.append("\\Device Parameters\\");
             //cout << "Current Key: " << curKey.c_str() << endl;;
 
-            dwSize = sizeof(comNum);//RegQueryValueEx执行完后，这个参数的值为实际的长度。因此在调用函数之前，要重新设置
             if (RegOpenKey(HKEY_LOCAL_MACHINE, Str2TChar(curKey), &hKey_tmp) == ERROR_SUCCESS) {
                 retReg = RegQueryValueEx(hKey_tmp, valueName, NULL, &dwType, (BYTE *)&comNumEx, &dwSize);
                 if (retReg == ERROR_SUCCESS) {
@@ -178,8 +177,8 @@ int EnumSerialPort2() {
                 }
                 RegCloseKey(hKey_tmp);
             }
-            dwSize = 20;
-            ZeroMemory(achKey, 60);
+            dwSize = 256; //RegQueryValueEx执行完后，这个参数的值为实际的长度。因此在调用函数之前，要重新设置
+            ZeroMemory(achKey, 128);
             cbMaxSubKey = 60;
             i++;
         }
