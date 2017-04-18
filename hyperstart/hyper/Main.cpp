@@ -106,7 +106,7 @@ void ErrorExit(LPTSTR lpszFunction)
 //
 int wmain(int argc, wchar_t *argv[])
 {
-    wprintf(L"Ensure COM1 and COM2:\n");
+    wprintf(L"\nChecking SerialPort...\n");
     EnsureSerialPort(1);
     //EnsureSerialPort(2);
 
@@ -149,7 +149,7 @@ int wmain(int argc, wchar_t *argv[])
     }
     else
     {
-        wprintf(L"Parameters:\n");
+        wprintf(L"\nParameters:\n");
         wprintf(L" <COM> <BAUD>            start service.\n");
         wprintf(L" -install <COM> <BAUD>   to install the service.\n");
         wprintf(L" -remove                 to remove the service.\n");

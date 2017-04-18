@@ -114,8 +114,8 @@ void CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
     // Log a service start message to the Application log.
     WriteEventLogEntry(L"HyperStartService in OnStart", EVENTLOG_INFORMATION_TYPE);
 
-    // list all serial port
-    EnumeratePorts();
+    // list all available serial port
+    EnumerateSerialPorts();
 
     // Queue the main service function for execution in a worker thread.
     CThreadPool::QueueUserWorkItem(&CHyperStartService::ServiceWorkerThread, this);
