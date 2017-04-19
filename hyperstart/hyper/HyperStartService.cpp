@@ -137,6 +137,8 @@ void CHyperStartService::ServiceWorkerThread(void)
         // Perform main service function here...
         SerialPortCommunicate("com1", "115200");
         SerialPortCommunicate("com2", "115200");
+        SerialPortCommunicate("com3", "115200");
+        SerialPortCommunicate("com4", "115200");
         ::Sleep(5000);  // Simulate some lengthy operations.
     }
     WriteEventLogEntry(L"Exit ServiceWorkerThread", EVENTLOG_INFORMATION_TYPE);

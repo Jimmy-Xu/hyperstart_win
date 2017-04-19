@@ -107,8 +107,7 @@ void ErrorExit(LPTSTR lpszFunction)
 int wmain(int argc, wchar_t *argv[])
 {
     wprintf(L"\nChecking SerialPort...\n");
-    EnsureSerialPort(1);
-    //EnsureSerialPort(2);
+    EnsureSerialPort();
 
     if (argc == 3) {
         wprintf(L"Starting HyperStartService:\n");

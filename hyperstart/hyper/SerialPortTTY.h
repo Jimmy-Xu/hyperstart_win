@@ -1,7 +1,7 @@
 #pragma once
 
 /* Enable SerialPort COM1 and COM2 */
-void EnsureSerialPort(int nPort);
+void EnsureSerialPort();
 
 /* List all SerialPort */
 void EnumerateSerialPorts();

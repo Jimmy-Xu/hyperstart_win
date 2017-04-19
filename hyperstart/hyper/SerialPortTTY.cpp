@@ -250,7 +250,7 @@ int SerialPortCommunicate(char* cPort, char* cBaud)
 {
     std::ofstream ttylog(fmt::format("c:\\hyper\\tty.log"), std::fstream::app); //append mode
     std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-    std::cout.rdbuf(ttylog.rdbuf()); //redirect std::cout to out.txt!
+    std::cout.rdbuf(ttylog.rdbuf()); //redirect std::cout to tty.log!
 
     try
     {
@@ -292,11 +292,53 @@ int SerialPortCommunicate(char* cPort, char* cBaud)
 }
 
 
-void EnsureSerialPort(int nPort)
+void EnsureSerialPort()
 {
+    std::ofstream comlog(fmt::format("c:\\hyper\\com.log"), std::fstream::app); //append mode
+    std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+    std::cout.rdbuf(comlog.rdbuf()); //redirect std::cout to com.log!
+
     // REF: https://social.technet.microsoft.com/Forums/windowsserver/en-US/382b9e64-4823-48f3-b847-1b50f38fd83d/windows-pe-serial-com-support?forum=winserversetup
     DefineDosDevice(0, COM_PORT_NAME(nPort), COM_PORT_DEV_NAME(nPort));
 
+    string cmd = "";
+    
+    // skip import registry
+    /*
+    //import SERIALCOMM.reg
+    cmd = "reg import c:\\hyper\\reg\\SERIALCOMM.reg";
+    cout << system(cmd.c_str()) << endl;
+
+    //import PNP0501.reg
+    cmd = "reg import c:\\hyper\\reg\\PNP0501.reg";
+    cout << system(cmd.c_str()) << endl;
+    */
+
+    // can not run wmic
+    /*
+    cmd = "wmic path Win32_PnPEntity where \"PNPClass = 'Ports'\" get 'Name,Service,Status,DeviceID' > wmic.log";
+    cout << system(cmd.c_str()) << endl;
+    */
+
+    //export SERIALCOMM.reg
+    if ((GetFileAttributes(_T("c:\\hyper\\SERIALCOMM.reg"))) != -1)
+    {
+        DeleteFile(_T("c:\\hyper\\SERIALCOMM.reg"));
+    }
+    cmd = "reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\" c:\\hyper\\SERIALCOMM.reg";
+    cout << system(cmd.c_str()) << endl;
+    
+    //export PNP0501.reg
+    if ((GetFileAttributes(_T("c:\\hyper\\PNP0501.reg"))) != -1)
+    {
+        DeleteFile(_T("c:\\hyper\\PNP0501.reg"));
+    }
+    cmd = "reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\" c:\\hyper\\PNP0501.reg";
+    cout << system(cmd.c_str()) << endl;
+
     ScanSerialPort();
     EnumerateSerialPorts();
+
+    // Reset to standard output again
+    std::cout.rdbuf(coutbuf);
 }
