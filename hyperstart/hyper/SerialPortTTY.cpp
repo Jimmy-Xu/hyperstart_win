@@ -67,6 +67,25 @@ wstring Str2WStr(const string& s)
     return r;
 }
 
+
+/* Add 'DosDeviceName' in SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\\ */
+void SetDosDeviceName(HKEY *hKey, TCHAR *pPortName) {
+    cout << "\n[SetDosDeviceName()] " << TChar2Str(pPortName).c_str() << endl;
+    if (ERROR_SUCCESS == RegSetValueEx(
+        *hKey,
+        TEXT("DosDeviceName"),
+        0,
+        REG_SZ,
+        (BYTE *)pPortName,
+        (DWORD)(_tcslen(pPortName) + 1) * sizeof(TCHAR)
+    )) {
+        cout << "Set DosDeviceName: " << TChar2Str(pPortName).c_str() << " OK!" << endl;
+    }
+    else {
+        cout << "Set DosDeviceName: " << TChar2Str(pPortName).c_str() << " Failed:(" << endl;
+    }
+}
+
 /* Add 'PortName' in SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\\ */
 void SetPortName(HKEY *hKey, TCHAR *pPortName) {
     cout << "\n[SetPortName()] " << TChar2Str(pPortName).c_str() << endl;
@@ -145,6 +164,16 @@ void AddComPort(int i, TCHAR *pPortName) {
     RegCloseKey(hKey);
 }
 
+// Generate COM name
+TCHAR* getComName(int i) {
+    TCHAR comNumEx[256];
+    _itow_s(i, comNumEx, 10);
+    TCHAR *result = (TCHAR *)malloc((lstrlen(_T("COM")) + lstrlen(comNumEx) + 1) * sizeof(TCHAR));
+    lstrcpy(result, _T("COM"));
+    lstrcat(result, comNumEx);
+    return result;
+}
+
 /* Scan SerialPort by 'SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\\' */
 void ScanSerialPort() {
     cout << "\n[ScanSerialPort()]" << endl;
@@ -152,7 +181,6 @@ void ScanSerialPort() {
     static char* result[MAX_PORT];
 
     TCHAR sActive[128] = TEXT("SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\\");
-    LPCWSTR valueName = _T("DosDeviceName");
 
     HKEY hKey_tmp = NULL;
     HKEY hKey = NULL;
@@ -170,23 +198,21 @@ void ScanSerialPort() {
             cout << "============================================================" << "\nScan Key: " << curKey.c_str() << endl;;
 
             if (RegOpenKey(HKEY_LOCAL_MACHINE, Str2TChar(curKey), &hKey_tmp) == ERROR_SUCCESS) {
-                retReg = RegQueryValueEx(hKey_tmp, valueName, NULL, &dwType, (BYTE *)&comNumEx, &dwSize);
-                if (retReg == ERROR_SUCCESS) {
-                    cout << "Found COM: " << TChar2Str(comNumEx).c_str() << endl;
-                    SetPortName(&hKey_tmp, comNumEx);
-                    SetFriendlyName(sActive, i, comNumEx);
-                    AddComPort(i, comNumEx);
-                }
+                wcscpy_s(comNumEx, getComName(i));
+                cout << "Found COM: " << TChar2Str(comNumEx).c_str() << endl;
+                SetDosDeviceName(&hKey_tmp, comNumEx);
+                SetPortName(&hKey_tmp, comNumEx);
+                SetFriendlyName(sActive, i, comNumEx);
+                AddComPort(i, comNumEx);
                 RegCloseKey(hKey_tmp);
             }
             else if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, Str2TChar(curKey), 0, 0, &hKey_tmp) == ERROR_SUCCESS) {
-                retReg = RegQueryValueEx(hKey_tmp, valueName, NULL, &dwType, (BYTE *)&comNumEx, &dwSize);
-                if (retReg == ERROR_SUCCESS) {
-                    cout << "Found COM: " << TChar2Str(comNumEx).c_str() << endl;
-                    SetPortName(&hKey_tmp, comNumEx);
-                    SetFriendlyName(sActive, i, comNumEx);
-                    AddComPort(i, comNumEx);
-                }
+                wcscpy_s(comNumEx, getComName(i));
+                cout << "Found COM: " << TChar2Str(comNumEx).c_str() << endl;
+                SetDosDeviceName(&hKey_tmp, comNumEx);
+                SetPortName(&hKey_tmp, comNumEx);
+                SetFriendlyName(sActive, i, comNumEx);
+                AddComPort(i, comNumEx);
                 RegCloseKey(hKey_tmp);
             }
             dwSize = 256; //RegQueryValueEx执行完后，这个参数的值为实际的长度。因此在调用函数之前，要重新设置
@@ -291,18 +317,10 @@ int SerialPortCommunicate(char* cPort, char* cBaud)
     return 0;
 }
 
-
-void EnsureSerialPort()
+void ExportRegistry()
 {
-    std::ofstream comlog(fmt::format("c:\\hyper\\com.log"), std::fstream::app); //append mode
-    std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-    std::cout.rdbuf(comlog.rdbuf()); //redirect std::cout to com.log!
-
-    // REF: https://social.technet.microsoft.com/Forums/windowsserver/en-US/382b9e64-4823-48f3-b847-1b50f38fd83d/windows-pe-serial-com-support?forum=winserversetup
-    DefineDosDevice(0, COM_PORT_NAME(nPort), COM_PORT_DEV_NAME(nPort));
-
     string cmd = "";
-    
+
     // skip import registry
     /*
     //import SERIALCOMM.reg
@@ -327,7 +345,7 @@ void EnsureSerialPort()
     }
     cmd = "reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\" c:\\hyper\\SERIALCOMM.reg";
     cout << system(cmd.c_str()) << endl;
-    
+
     //export PNP0501.reg
     if ((GetFileAttributes(_T("c:\\hyper\\PNP0501.reg"))) != -1)
     {
@@ -335,8 +353,25 @@ void EnsureSerialPort()
     }
     cmd = "reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\" c:\\hyper\\PNP0501.reg";
     cout << system(cmd.c_str()) << endl;
+}
 
+
+void EnsureSerialPort()
+{
+    std::ofstream comlog(fmt::format("c:\\hyper\\com.log"), std::fstream::app); //append mode
+    std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+    std::cout.rdbuf(comlog.rdbuf()); //redirect std::cout to com.log!
+
+    // REF: https://social.technet.microsoft.com/Forums/windowsserver/en-US/382b9e64-4823-48f3-b847-1b50f38fd83d/windows-pe-serial-com-support?forum=winserversetup
+    DefineDosDevice(0, COM_PORT_NAME(nPort), COM_PORT_DEV_NAME(nPort));
+
+    // Export Registry to File
+    ExportRegistry();
+
+    // Generate SerialPort
     ScanSerialPort();
+
+    // Enumerate SerialPort
     EnumerateSerialPorts();
 
     // Reset to standard output again
