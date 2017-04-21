@@ -51,8 +51,13 @@ TCHAR* Str2TChar(string pStr) {
 string LPCWSTR2Str(LPCWSTR wString)
 {
     wstring tempWstring(wString);
-    string tempString(tempWstring.begin(), tempWstring.end());
-    return tempString;
+    string result(tempWstring.begin(), tempWstring.end());
+    return result;
+}
+
+LPCWSTR Str2LPCWSTR(string str) {
+    std::wstring result = std::wstring(str.begin(), str.end());
+    return (LPCWSTR)result.c_str();
 }
 
 wstring Str2WStr(const string& s)
@@ -127,6 +132,40 @@ void SetFriendlyName(TCHAR *sActive, int i, TCHAR *pPortName) {
         }
     }
     RegCloseKey(hKey);
+}
+
+void InstallSerialDriver() {
+    cout << "\n[InstallSerialDrive()] " << endl;
+    string cmd = "";
+    /*
+    if ((GetFileAttributes(_T("c:\\hyper\\driver\\msports.inf"))) == -1)
+    {
+        cout << "Missing c:\\hyper\\driver\\msports.inf" << endl;
+    }
+    else {
+        cout << "Start install msports.inf with pnputil.exe" << endl;
+        cmd = "pnputil.exe /add-driver c:\\hyper\\driver\\msports.inf /install > c:\\hyper\\msport.log";
+        cout << system(cmd.c_str()) << endl;
+    }
+    */
+    cout << "Start list drivers with pnputil.exe" << endl;
+    cmd = "pnputil.exe /e > c:\\hyper\\pnputil.log";
+    cout << system(cmd.c_str()) << endl;
+}
+
+void CreateSERIALCOMM() {
+    cout << "\n[EnsureSERIALCOMM()] " << endl;
+
+    HKEY hKey;
+    //打开注册表键，不存在则创建它
+    TCHAR sActive[128] = TEXT("HARDWARE\\DEVICEMAP\\SERIALCOMM");
+    if (ERROR_SUCCESS == RegCreateKeyEx(HKEY_LOCAL_MACHINE, sActive, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, NULL)) {
+        cout << "Key " << TChar2Str(sActive).c_str() << " existed" << endl;
+        return;
+    }
+    else {
+        cout << "Key " << TChar2Str(sActive).c_str() << " can not be created" << endl;;
+    }
 }
 
 /* Add COM in HARDWARE\\DEVICEMAP\\SERIALCOMM */
@@ -215,6 +254,9 @@ void ScanSerialPort() {
                 AddComPort(i, comNumEx);
                 RegCloseKey(hKey_tmp);
             }
+            else {
+                cout << "\nOpen Key: " << curKey.c_str() << " failed" << endl;;
+            }
             dwSize = 256; //RegQueryValueEx执行完后，这个参数的值为实际的长度。因此在调用函数之前，要重新设置
             ZeroMemory(achKey, 128);
             cbMaxSubKey = 60;
@@ -261,6 +303,9 @@ void EnumerateSerialPorts(){
                     cout << " " << TChar2Str(valueData).c_str() << endl;
                 }
                 RegCloseKey(hKey_tmp);
+            }
+            else {
+                cout << "\nOpen Key: " << curKey.c_str() << " failed" << endl;;
             }
             dwSize = 256; //RegQueryValueEx执行完后，这个参数的值为实际的长度。因此在调用函数之前，要重新设置
             ZeroMemory(achKey, 128);
@@ -317,12 +362,34 @@ int SerialPortCommunicate(char* cPort, char* cBaud)
     return 0;
 }
 
-void ExportRegistry()
+
+void ExecuteWMIC()
 {
     string cmd = "";
+    // execute wmic
+    cmd = "WMIC path Win32_PnPEntity > c:\\hyper\\Win32_PnPEntity.log";
+    cout << system(cmd.c_str()) << endl;
 
-    // skip import registry
-    /*
+    cmd = "WMIC path Win32_SerialPort > c:\\hyper\\Win32_SerialPort.log";
+    cout << system(cmd.c_str()) << endl;
+}
+
+
+void ExportRegistry(char* cmd, char* subKey)
+{
+    LPCWSTR filename = Str2LPCWSTR(fmt::format("c:\\hyper\\{0}.reg", subKey));
+    if (GetFileAttributes(filename) != -1)
+    {
+        DeleteFile(filename);
+    }
+    cout << system(fmt::format("{0} {1}", cmd, LPCWSTR2Str(filename)).c_str()) << endl;
+}
+
+
+void ImportRegistry() {
+
+    string cmd = "";
+
     //import SERIALCOMM.reg
     cmd = "reg import c:\\hyper\\reg\\SERIALCOMM.reg";
     cout << system(cmd.c_str()) << endl;
@@ -330,31 +397,7 @@ void ExportRegistry()
     //import PNP0501.reg
     cmd = "reg import c:\\hyper\\reg\\PNP0501.reg";
     cout << system(cmd.c_str()) << endl;
-    */
-
-    // can not run wmic
-    /*
-    cmd = "wmic path Win32_PnPEntity where \"PNPClass = 'Ports'\" get 'Name,Service,Status,DeviceID' > wmic.log";
-    cout << system(cmd.c_str()) << endl;
-    */
-
-    //export SERIALCOMM.reg
-    if ((GetFileAttributes(_T("c:\\hyper\\SERIALCOMM.reg"))) != -1)
-    {
-        DeleteFile(_T("c:\\hyper\\SERIALCOMM.reg"));
-    }
-    cmd = "reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\" c:\\hyper\\SERIALCOMM.reg";
-    cout << system(cmd.c_str()) << endl;
-
-    //export PNP0501.reg
-    if ((GetFileAttributes(_T("c:\\hyper\\PNP0501.reg"))) != -1)
-    {
-        DeleteFile(_T("c:\\hyper\\PNP0501.reg"));
-    }
-    cmd = "reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\" c:\\hyper\\PNP0501.reg";
-    cout << system(cmd.c_str()) << endl;
 }
-
 
 void EnsureSerialPort()
 {
@@ -365,14 +408,35 @@ void EnsureSerialPort()
     // REF: https://social.technet.microsoft.com/Forums/windowsserver/en-US/382b9e64-4823-48f3-b847-1b50f38fd83d/windows-pe-serial-com-support?forum=winserversetup
     DefineDosDevice(0, COM_PORT_NAME(nPort), COM_PORT_DEV_NAME(nPort));
 
-    // Export Registry to File
-    ExportRegistry();
+    // Ensure HARDWARE\\DEVICEMAP\\SERIALCOMM
+    CreateSERIALCOMM();
+
+    // Install Driver for SerialDriver
+    InstallSerialDriver();
 
     // Generate SerialPort
     ScanSerialPort();
 
     // Enumerate SerialPort
     EnumerateSerialPorts();
+
+    // Execute wmic command
+    ExecuteWMIC();
+
+    // Export Registry to File
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\"", "DEVICEMAP");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\"", "SERIALCOMM");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\"", "PNP0501");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Class\"", "Class");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\Serial\"", "Serial");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\DRIVERS\\DriverDatabase\"", "DriverDatabase");
+
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\DRIVERS\"", "_DRIVERS");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\"", "_HARDWARE");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SOFTWARE\"", "_SOFTWARE");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\"", "_SYSTEM");
+
+    //SetupCopyOEMInf(_T("c:\\hyper\\driver\\msports.inf"), NULL, SPOST_PATH, SP_COPY_REPLACEONLY, _T("msports.inf"), 1024, NULL, NULL)
 
     // Reset to standard output again
     std::cout.rdbuf(coutbuf);
