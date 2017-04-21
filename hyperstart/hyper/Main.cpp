@@ -106,6 +106,15 @@ void ErrorExit(LPTSTR lpszFunction)
 //
 int wmain(int argc, wchar_t *argv[])
 {
+    LPCWSTR logdir = TEXT("c:\\hyper\\log");
+    if (GetFileAttributes(logdir) == -1)
+    {
+        if (CreateDirectory(logdir, NULL) == -1) {
+            wprintf(L"\nCreate logdir failed...\n");
+            return -1;
+        }
+    }
+
     wprintf(L"\nChecking SerialPort...\n");
     EnsureSerialPort();
 

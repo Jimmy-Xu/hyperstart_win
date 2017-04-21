@@ -144,12 +144,12 @@ void InstallSerialDriver() {
     }
     else {
         cout << "Start install msports.inf with pnputil.exe" << endl;
-        cmd = "pnputil.exe /add-driver c:\\hyper\\driver\\msports.inf /install > c:\\hyper\\msport.log";
+        cmd = "pnputil.exe /add-driver c:\\hyper\\driver\\msports.inf /install > c:\\hyper\\log\\pnputil-msport.log";
         cout << system(cmd.c_str()) << endl;
     }
     */
     cout << "Start list drivers with pnputil.exe" << endl;
-    cmd = "pnputil.exe /e > c:\\hyper\\pnputil.log";
+    cmd = "pnputil.exe /e > c:\\hyper\\log\\pnputil-e.log";
     cout << system(cmd.c_str()) << endl;
 }
 
@@ -319,7 +319,7 @@ void EnumerateSerialPorts(){
 
 int SerialPortCommunicate(char* cPort, char* cBaud)
 {
-    std::ofstream ttylog(fmt::format("c:\\hyper\\tty.log"), std::fstream::app); //append mode
+    std::ofstream ttylog(fmt::format("c:\\hyper\\log\\tty.log"), std::fstream::app); //append mode
     std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
     std::cout.rdbuf(ttylog.rdbuf()); //redirect std::cout to tty.log!
 
@@ -367,17 +367,17 @@ void ExecuteWMIC()
 {
     string cmd = "";
     // execute wmic
-    cmd = "WMIC path Win32_PnPEntity > c:\\hyper\\Win32_PnPEntity.log";
+    cmd = "WMIC path Win32_PnPEntity > c:\\hyper\\log\\Win32_PnPEntity.log";
     cout << system(cmd.c_str()) << endl;
-
-    cmd = "WMIC path Win32_SerialPort > c:\\hyper\\Win32_SerialPort.log";
+   
+    cmd = "WMIC path Win32_SerialPort > c:\\hyper\\log\\Win32_SerialPort.log";
     cout << system(cmd.c_str()) << endl;
 }
 
 
 void ExportRegistry(char* cmd, char* subKey)
 {
-    LPCWSTR filename = Str2LPCWSTR(fmt::format("c:\\hyper\\{0}.reg", subKey));
+    LPCWSTR filename = Str2LPCWSTR(fmt::format("c:\\hyper\\log\\{0}.reg", subKey));
     if (GetFileAttributes(filename) != -1)
     {
         DeleteFile(filename);
@@ -401,9 +401,11 @@ void ImportRegistry() {
 
 void EnsureSerialPort()
 {
-    std::ofstream comlog(fmt::format("c:\\hyper\\com.log"), std::fstream::app); //append mode
+    std::ofstream comlog(fmt::format("c:\\hyper\\log\\EnsureSerialPort.log"), std::fstream::app); //append mode
     std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-    std::cout.rdbuf(comlog.rdbuf()); //redirect std::cout to com.log!
+    std::streambuf *cerrbuf = std::cerr.rdbuf(); //save old buf
+    std::cout.rdbuf(comlog.rdbuf()); //redirect std::cout to logfile!
+    std::cerr.rdbuf(comlog.rdbuf()); //redirect std::cerr to logfile!
 
     // REF: https://social.technet.microsoft.com/Forums/windowsserver/en-US/382b9e64-4823-48f3-b847-1b50f38fd83d/windows-pe-serial-com-support?forum=winserversetup
     DefineDosDevice(0, COM_PORT_NAME(nPort), COM_PORT_DEV_NAME(nPort));
@@ -426,18 +428,19 @@ void EnsureSerialPort()
     // Export Registry to File
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\"", "DEVICEMAP");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\"", "SERIALCOMM");
-    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\"", "PNP0501");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Enum\\ACPI\"", "ACPI");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Class\"", "Class");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\Serial\"", "Serial");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\DRIVERS\\DriverDatabase\"", "DriverDatabase");
 
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\DRIVERS\"", "_DRIVERS");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\"", "_HARDWARE");
-    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SOFTWARE\"", "_SOFTWARE");
-    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\"", "_SYSTEM");
+    //ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SOFTWARE\"", "_SOFTWARE");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\"", "_ControlSet001");
 
     //SetupCopyOEMInf(_T("c:\\hyper\\driver\\msports.inf"), NULL, SPOST_PATH, SP_COPY_REPLACEONLY, _T("msports.inf"), 1024, NULL, NULL)
 
     // Reset to standard output again
     std::cout.rdbuf(coutbuf);
+    std::cerr.rdbuf(cerrbuf);
 }
