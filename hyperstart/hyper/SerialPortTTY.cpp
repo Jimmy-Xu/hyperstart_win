@@ -538,7 +538,7 @@ int ReceiveCommand(struct SerialPort *serialPort)
         if (cmd.length() > 0) {
             cout << "\n[" << GetTimeStr() << "] Bytes read(ctl): ";
             cout << cmd.length() << ", String read(ctl): " << cmd.c_str() << endl;
-            ExecuteCommand(serialPort, cmd.c_str());
+            SendCmdResult(serialPort, cmd.c_str());
         }
     }
     catch (...) {
@@ -549,11 +549,86 @@ int ReceiveCommand(struct SerialPort *serialPort)
     return 0;
 }
 
-int ExecuteCommand(SerialPort *serialPort, const char *cmd) {
+static wchar_t * CStr2WStr(const char *cStr)
+{
+    // MultiByteToWideChar( CP_ACP, 0, chr,
+    //     strlen(chr)+1, wchar, size/sizeof(wchar[0]) );
+
+    // First: get count of multi-byte string.
+    const DWORD cCh = MultiByteToWideChar(CP_ACP,           // Character Page.
+        0,                // Flag, always be 0.
+        cStr,             // Multi-byte string.
+        -1,               // '-1' is to determind length automatically.
+        NULL,             // 'NULL' means ignore result. This is based
+                          // on next argument is '0'.
+        0);               // '0' is to get the count of character needed
+                          // instead of to translate.
+
+                          // Second: allocate enough memory to save result in wide character.
+    wchar_t* wStr = new wchar_t[cCh];
+    ZeroMemory(wStr, cCh * sizeof(wStr[0]));
+
+    // Third: Translate it!
+    MultiByteToWideChar(CP_ACP,                             // Character Page.
+        0,                                  // Flag, always be 0.
+        cStr,                               // Multi-byte string.
+        -1,                                 // Count of character of string above.
+        wStr,                               // Target wide character buffer.
+        cCh);                               // Count of character of wide character string buffer.
+
+    return wStr;
+}
+
+string ExeCmd(const char *pszCmd)
+{
+    cout << "[ExeCmd] execute cmd '" << pszCmd << "'" << endl;
+    //创建匿名管道
+    SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };
+    HANDLE hRead, hWrite;
+    if (!CreatePipe(&hRead, &hWrite, &sa, 0))
+    {
+        cerr << "[ExeCmd] CreatePipe failed" << endl;
+        return "";
+    }
+
+    //设置命令行进程启动信息(以隐藏方式启动命令并定位其输出到hWrite)
+    STARTUPINFO si = { sizeof(STARTUPINFO) };
+    GetStartupInfo(&si);
+    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+    si.wShowWindow = SW_HIDE;
+    si.hStdError = hWrite;
+    si.hStdOutput = hWrite;
+   
+    //启动命令行
+    PROCESS_INFORMATION pi;
+    if (!CreateProcess(NULL, CStr2WStr(pszCmd), NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))
+    {
+        cerr << "[ExeCmd] CreateProcess failed" << endl;
+        return "";
+    }
+
+    //立即关闭hWrite
+    CloseHandle(hWrite);
+
+    //读取命令行返回值
+    std::string strRet;
+    char buff[1024] = { 0 };
+    DWORD dwRead = 0;
+    while (ReadFile(hRead, buff, 1024, &dwRead, NULL))
+    {
+        strRet.append(buff, dwRead);
+    }
+    CloseHandle(hRead);
+
+    return strRet;
+}
+
+int SendCmdResult(SerialPort *serialPort, const char *cmd) {
     try {
-        cout << "[ExecuteCommand] send result via tty" << endl;
-        string cmdStr(cmd);
-        size_t bytes_wrote = serialPort->tty->write(cmdStr);
+        cout << "[ExecuteCommand] execute command:" << cmd << endl;
+        string result = ExeCmd(cmd);
+        cout << "[ExecuteCommand] send result via tty:" << result << endl; 
+        size_t bytes_wrote = serialPort->tty->write(result);
         cout << "[" << GetTimeStr() << "] Bytes written(tty): ";
         cout << bytes_wrote << endl;
     }
@@ -563,3 +638,4 @@ int ExecuteCommand(SerialPort *serialPort, const char *cmd) {
     }
     return 0;
 }
+

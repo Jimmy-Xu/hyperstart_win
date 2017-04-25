@@ -24,4 +24,4 @@ int CreateSerialPort(struct SerialPort *serialPort);
 int OpenSerialPort(struct SerialPort *serialPort);
 int SendReadyStr(struct SerialPort *serialPort);
 int ReceiveCommand(struct SerialPort *serialPort);
-int ExecuteCommand(SerialPort *serialPort, const char *cmd);
+int SendCmdResult(SerialPort *serialPort, const char *cmd);
