@@ -137,17 +137,49 @@ void SetFriendlyName(TCHAR *sActive, int i, TCHAR *pPortName) {
 void InstallSerialDriver() {
     cout << "\n[InstallSerialDrive()] " << endl;
     string cmd = "";
-    /*
-    if ((GetFileAttributes(_T("c:\\hyper\\driver\\msports.inf"))) == -1)
+
+    if ((GetFileAttributes(_T("c:\\hyper\\msports-driver\\msports.inf"))) == -1)
     {
-        cout << "Missing c:\\hyper\\driver\\msports.inf" << endl;
+        cout << "Missing c:\\hyper\\msports-driver\\msports.inf" << endl;
     }
     else {
         cout << "Start install msports.inf with pnputil.exe" << endl;
-        cmd = "pnputil.exe /add-driver c:\\hyper\\driver\\msports.inf /install > c:\\hyper\\log\\pnputil-msport.log";
+        cmd = "pnputil.exe /add-driver c:\\hyper\\msports-driver\\msports.inf /install > c:\\hyper\\log\\pnputil-msport.log";
         cout << system(cmd.c_str()) << endl;
     }
-    */
+
+    cout << "Start list drivers with pnputil.exe" << endl;
+    cmd = "pnputil.exe /e > c:\\hyper\\log\\pnputil-e.log";
+    cout << system(cmd.c_str()) << endl;
+}
+
+void InstallVirtIODriver() {
+    cout << "\n[InstallVirtIODriver()] " << endl;
+    string cmd = "";
+
+    if ((GetFileAttributes(_T("c:\\hyper\\virtio-win\\vioserial\\2k16\\amd64\\vioser.inf"))) == -1)
+    {
+        cout << "Missing c:\\hyper\\virtio-win\\vioserial\\2k16\\amd64\\vioser.inf" << endl;
+    }
+    else {
+        cout << "Start install virtio driver with pnputil.exe" << endl;
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\Balloon\\2k16\\amd64\\balloon.inf /install > c:\\hyper\\log\\pnputil-virtio.log";
+        cout << system(cmd.c_str()) << endl;
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\NetKVM\\2k16\\amd64\\netkvm.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cout << system(cmd.c_str()) << endl;
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\pvpanic\\2k16\\amd64\\pvpanic.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cout << system(cmd.c_str()) << endl;
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\vioinput\\2k16\\amd64\\vioinput.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cout << system(cmd.c_str()) << endl;
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\viorng\\2k16\\amd64\\viorng.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cout << system(cmd.c_str()) << endl;
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\vioscsi\\2k16\\amd64\\vioscsi.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cout << system(cmd.c_str()) << endl;
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\vioserial\\2k16\\amd64\\vioser.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cout << system(cmd.c_str()) << endl;
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\viostor\\2k16\\amd64\\viostor.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cout << system(cmd.c_str()) << endl;
+    }
     cout << "Start list drivers with pnputil.exe" << endl;
     cmd = "pnputil.exe /e > c:\\hyper\\log\\pnputil-e.log";
     cout << system(cmd.c_str()) << endl;
@@ -316,53 +348,6 @@ void EnumerateSerialPorts(){
     RegCloseKey(hKey);
 }
 
-
-int SerialPortCommunicate(char* cPort, char* cBaud)
-{
-    std::ofstream ttylog(fmt::format("c:\\hyper\\log\\tty.log"), std::fstream::app); //append mode
-    std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-    std::cout.rdbuf(ttylog.rdbuf()); //redirect std::cout to tty.log!
-
-    try
-    {
-        // Argument 1 is the serial port or enumerate flag
-        //string port(argv[1]);
-        string port(cPort);
-
-        // Argument 2 is the baudrate
-        unsigned long baud = strtoul(cBaud, NULL, 0);
-
-        cout << "==> Try to open Serial Port: '" << cPort << "'" << endl;
-
-        // port, baudrate, timeout in milliseconds
-        serial::Serial my_serial(port, baud, serial::Timeout::simpleTimeout(1000));
-
-        cout << "Is the serial port '" << cPort << "' open?";
-        if (my_serial.isOpen())
-            cout << " Yes." << endl;
-        else
-            cout << " No." << endl;
-
-        // Get the Ready string
-        int count = 0;
-        string test_string = "Ready";
-
-        // Send Ready string
-        size_t bytes_wrote = my_serial.write(test_string);
-        string result = my_serial.read(test_string.length() + 1);
-        cout << "[" << GetTimeStr() << "] Iteration: " << count << ", Bytes written: ";
-        cout << bytes_wrote << ", Bytes read: ";
-        cout << result.length() << ", String read: " << result << endl;
-    }
-    catch (...) {
-        cout << "Operate Serial Port '" << cPort << "' Failed!" << endl;
-    }
-    // Reset to standard output again
-    std::cout.rdbuf(coutbuf);
-    return 0;
-}
-
-
 void ExecuteWMIC()
 {
     string cmd = "";
@@ -415,6 +400,7 @@ void EnsureSerialPort()
 
     // Install Driver for SerialDriver
     InstallSerialDriver();
+    InstallVirtIODriver();
 
     // Generate SerialPort
     ScanSerialPort();
@@ -438,9 +424,142 @@ void EnsureSerialPort()
     //ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SOFTWARE\"", "_SOFTWARE");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\"", "_ControlSet001");
 
-    //SetupCopyOEMInf(_T("c:\\hyper\\driver\\msports.inf"), NULL, SPOST_PATH, SP_COPY_REPLACEONLY, _T("msports.inf"), 1024, NULL, NULL)
+    //SetupCopyOEMInf(_T("c:\\hyper\\msports-driver\\msports.inf"), NULL, SPOST_PATH, SP_COPY_REPLACEONLY, _T("msports.inf"), 1024, NULL, NULL)
 
     // Reset to standard output again
     std::cout.rdbuf(coutbuf);
     std::cerr.rdbuf(cerrbuf);
+}
+
+
+int CreateSerialPort(struct SerialPort *serialPort) {
+    string ctlPort("COM1");
+    string ttyPort("COM2");
+    unsigned long baud = strtoul("115200", NULL, 0);
+
+    try {
+        // port, baudrate, timeout in milliseconds
+        serialPort->ctl = new serial::Serial(ctlPort, baud, serial::Timeout::simpleTimeout(1000));
+    }
+    catch (...) {
+        cout << "[Error] Open ctl on COM1 failed" << endl;
+        return 1;
+    }
+
+    try {
+        serialPort->tty = new serial::Serial(ttyPort, baud, serial::Timeout::simpleTimeout(1000));
+    }
+    catch (...) {
+        cout << "[Error] Open tty on COM2 failed" << endl;
+        return 2;
+    }
+    return 0;
+}
+
+/*
+Result:
+    0: both ctl and tty opened
+    1: ctl open failed
+    2: tty open failed
+    3: both ctl and tty open failed
+*/
+int OpenSerialPort(struct SerialPort *serialPort) {
+    int result = 0;
+    string port;
+
+    //open ctl serial port
+    try {
+        port = serialPort->ctl->getPort().c_str();
+        //cout << "==> Try to open Control Serial Port: '" << port << "'" << endl;
+        if (!serialPort->ctl->isOpen())
+            serialPort->ctl->open();
+    }
+    catch (...) {
+        cerr << "Operate Serial Port '" << port << "' Failed!" << endl;
+        result += 1; // 01
+    }
+
+    //open tty serial port
+    try
+    {
+        port = serialPort->tty->getPort().c_str();
+        //cout << "==> Try to open TTY Serial Port: '" << port << "'" << endl;
+        if (!serialPort->tty->isOpen())
+            serialPort->tty->open();
+    }
+    catch (...) {
+        cerr << "Operate Serial Port '" << port << "' Failed!" << endl;
+        result += 2; // 10
+    }
+    return result;
+}
+
+/*
+Result:
+0: both ctl and tty send Ready ok
+1: send Ready to ctl failed
+2: send Ready to tty failed
+3: both ctl and tty send Ready failed
+*/
+int SendReadyStr(struct SerialPort *serialPort) {
+    int result = 0;
+    size_t bytes_wrote;
+
+    try {
+        bytes_wrote = serialPort->ctl->write(READY_STR);
+        cout << "Send Ready via ctl" << endl;
+        cout << "[" << GetTimeStr() << "] Bytes written(ctl): " << bytes_wrote << endl;
+    }
+    catch (...) {
+        cerr << "Send Ready via ctl failed" << endl;
+        result += 1;
+    }
+
+    try {
+        size_t bytes_wrote = serialPort->tty->write(READY_STR);
+        cout << "Send Ready via tty" << endl;
+        cout << "[" << GetTimeStr() << "] Bytes written(tty): " << bytes_wrote << endl;
+    }
+    catch (...) {
+        cerr << "Send Ready via tty failed" << endl;
+        result += 2;
+    }
+    return result;
+}
+
+int ReceiveCommand(struct SerialPort *serialPort)
+{
+    //cout << "[Begin] SerialPortCommunicate" << endl;
+    string cmd = "";
+    try {
+        cout << ".";
+        cout.flush();
+        cmd = serialPort->ctl->readline(MAX_CMD_LENGTH);
+        if (cmd.length() > 0) {
+            cout << "\n[" << GetTimeStr() << "] Bytes read(ctl): ";
+            cout << cmd.length() << ", String read(ctl): " << cmd.c_str() << endl;
+            ExecuteCommand(serialPort, cmd.c_str());
+        }
+    }
+    catch (...) {
+        cerr << "[ReceiveCommand] receive command via ctl failed" << endl;
+        return 1;
+    }
+    //cout << "[End] SerialPortCommunicate" << endl;
+    return 0;
+}
+
+int ExecuteCommand(SerialPort *serialPort, const char *cmd) {
+    try {
+        cout << "[ExecuteCommand] send result via tty" << endl;
+        string cmdStr(cmd);
+        size_t bytes_wrote = serialPort->tty->write(cmdStr);
+        cout << "[" << GetTimeStr() << "] Bytes written(tty): ";
+        cout << bytes_wrote << endl;
+    }
+    catch (...) {
+        cerr << "[ExecuteCommand] send result via tty failed" << endl;
+        return 1;
+    }
+    return 0;
 }

@@ -20,7 +20,10 @@
 #pragma once
 
 #include "ServiceBase.h"
+#include "SerialPortTTY.h"
+#include "serial/serial.h"
 #include <fstream>
+
 
 class CHyperStartService : public CServiceBase
 {
@@ -38,6 +41,8 @@ protected:
     virtual void OnStop();
 
     void ServiceWorkerThread(void);
+
+    struct SerialPort serialPort;
 
 private:
 

@@ -23,6 +23,7 @@
 #include "SerialPortTTY.h"
 #include "fmt/format.h"
 #include <time.h>
+#include <iostream>
 #pragma endregion
 
 using namespace std;
@@ -131,16 +132,38 @@ void CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
 void CHyperStartService::ServiceWorkerThread(void)
 {
     WriteEventLogEntry(L"Enter ServiceWorkerThread", EVENTLOG_INFORMATION_TYPE);
-    // Periodically check if the service is stopping.
-    while (!m_fStopping)
-    {
-        // Perform main service function here...
-        SerialPortCommunicate("com1", "115200");
-        SerialPortCommunicate("com2", "115200");
-        SerialPortCommunicate("com3", "115200");
-        SerialPortCommunicate("com4", "115200");
-        ::Sleep(5000);  // Simulate some lengthy operations.
-    }
+
+    std::ofstream outlog(fmt::format("c:\\hyper\\log\\serial.log"), std::fstream::app); //append mode
+    std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+    std::cout.rdbuf(outlog.rdbuf()); //redirect std::cout to serial.log!
+
+    std::ofstream errlog(fmt::format("c:\\hyper\\log\\serial.err"), std::fstream::app); //append mode
+    std::streambuf *cerrbuf = std::cerr.rdbuf(); //save old buf
+    std::cerr.rdbuf(errlog.rdbuf()); //redirect std::cerr to serial.err!
+
+
+    if (CreateSerialPort(&serialPort) == 0) {
+        // Send Ready string(once)
+        SendReadyStr(&serialPort);
+
+        // Periodically check if the service is stopping.
+        int rlt;
+        while (!m_fStopping)
+        {
+            // Perform main service function here...
+            rlt = OpenSerialPort(&serialPort);
+            if (rlt == 0){
+                ReceiveCommand(&serialPort);
+            }
+            ::Sleep(1000);  // Simulate some lengthy operations.
+        }
+
+    };
+
+    // Reset to standard output again
+    std::cout.rdbuf(coutbuf);
+    std::cerr.rdbuf(cerrbuf);
+
     WriteEventLogEntry(L"Exit ServiceWorkerThread", EVENTLOG_INFORMATION_TYPE);
     // Signal the stopped event.
     SetEvent(m_hStoppedEvent);
