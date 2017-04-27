@@ -141,24 +141,24 @@ void CHyperStartService::ServiceWorkerThread(void)
     std::streambuf *cerrbuf = std::cerr.rdbuf(); //save old buf
     std::cerr.rdbuf(errlog.rdbuf()); //redirect std::cerr to serial.err!
 
-
-    if (CreateSerialPort(&serialPort) == 0) {
-        // Send Ready string(once)
-        SendReadyStr(&serialPort);
-
-        // Periodically check if the service is stopping.
-        int rlt;
-        while (!m_fStopping)
-        {
-            // Perform main service function here...
+    // Periodically check if the service is stopping.
+    int rlt;
+    serialPort.ctl = NULL;
+    serialPort.tty = NULL;
+    while (!m_fStopping)
+    {
+        rlt = CreateSerialPort(&serialPort);
+        if (rlt == 0) {
             rlt = OpenSerialPort(&serialPort);
-            if (rlt == 0){
+            if (rlt == 0) {
+                // Perform main service function here...
                 ReceiveCommand(&serialPort);
+                continue;
             }
-            ::Sleep(1000);  // Simulate some lengthy operations.
         }
+        ::Sleep(500);  // Simulate some lengthy operations.
+    }
 
-    };
 
     // Reset to standard output again
     std::cout.rdbuf(coutbuf);

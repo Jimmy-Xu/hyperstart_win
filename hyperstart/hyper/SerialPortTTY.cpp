@@ -433,27 +433,36 @@ void EnsureSerialPort()
 
 
 int CreateSerialPort(struct SerialPort *serialPort) {
+    int result = 0;
     string ctlPort("COM1");
     string ttyPort("COM2");
     unsigned long baud = strtoul("115200", NULL, 0);
 
     try {
         // port, baudrate, timeout in milliseconds
-        serialPort->ctl = new serial::Serial(ctlPort, baud, serial::Timeout::simpleTimeout(1000));
+        if (serialPort->ctl == NULL) {
+            serialPort->ctl = new serial::Serial(ctlPort, baud, serial::Timeout::simpleTimeout(1000));
+            SendReadyStr(serialPort->ctl, "ctl");
+        }
     }
     catch (...) {
-        cout << "[Error] Open ctl on COM1 failed" << endl;
-        return 1;
+        cout << "[Error] Create ctl on COM1 failed" << endl;
+        serialPort->ctl = NULL;
+        result += 1;
     }
 
     try {
-        serialPort->tty = new serial::Serial(ttyPort, baud, serial::Timeout::simpleTimeout(1000));
+        if (serialPort->tty == NULL) {
+            serialPort->tty = new serial::Serial(ttyPort, baud, serial::Timeout::simpleTimeout(1000));
+            SendReadyStr(serialPort->tty, "tty");
+        }
     }
     catch (...) {
-        cout << "[Error] Open tty on COM2 failed" << endl;
-        return 2;
+        cout << "[Error] Create tty on COM2 failed" << endl;
+        serialPort->tty = NULL;
+        result += 2;
     }
-    return 0;
+    return result;
 }
 
 /*
@@ -471,8 +480,10 @@ int OpenSerialPort(struct SerialPort *serialPort) {
     try {
         port = serialPort->ctl->getPort().c_str();
         //cout << "==> Try to open Control Serial Port: '" << port << "'" << endl;
-        if (!serialPort->ctl->isOpen())
+        if (!serialPort->ctl->isOpen()) {
             serialPort->ctl->open();
+            SendReadyStr(serialPort->ctl, "ctl");
+        }
     }
     catch (...) {
         cerr << "Operate Serial Port '" << port << "' Failed!" << endl;
@@ -484,8 +495,10 @@ int OpenSerialPort(struct SerialPort *serialPort) {
     {
         port = serialPort->tty->getPort().c_str();
         //cout << "==> Try to open TTY Serial Port: '" << port << "'" << endl;
-        if (!serialPort->tty->isOpen())
+        if (!serialPort->tty->isOpen()) {
             serialPort->tty->open();
+            SendReadyStr(serialPort->tty, "tty");
+        }
     }
     catch (...) {
         cerr << "Operate Serial Port '" << port << "' Failed!" << endl;
@@ -495,34 +508,29 @@ int OpenSerialPort(struct SerialPort *serialPort) {
 }
 
 /*
+Send Ready String When open serial port everytime
 Result:
 0: both ctl and tty send Ready ok
 1: send Ready to ctl failed
 2: send Ready to tty failed
 3: both ctl and tty send Ready failed
 */
-int SendReadyStr(struct SerialPort *serialPort) {
+int SendReadyStr(serial::Serial *pPort, char *pName) {
     int result = 0;
     size_t bytes_wrote;
 
     try {
-        bytes_wrote = serialPort->ctl->write(READY_STR);
-        cout << "Send Ready via ctl" << endl;
+        bytes_wrote = pPort->write(READY_STR);
+        cout << "Send Ready via " << pName << endl;
         cout << "[" << GetTimeStr() << "] Bytes written(ctl): " << bytes_wrote << endl;
     }
     catch (...) {
-        cerr << "Send Ready via ctl failed" << endl;
-        result += 1;
-    }
-
-    try {
-        size_t bytes_wrote = serialPort->tty->write(READY_STR);
-        cout << "Send Ready via tty" << endl;
-        cout << "[" << GetTimeStr() << "] Bytes written(tty): " << bytes_wrote << endl;
-    }
-    catch (...) {
-        cerr << "Send Ready via tty failed" << endl;
-        result += 2;
+        cerr << "Send Ready via " << pName << " failed" << endl;
+        if (pName == "ctl")
+            result += 1;
+        else if (pName == "tty") {
+            result += 2;
+        }
     }
     return result;
 }
@@ -629,6 +637,8 @@ int SendCmdResult(SerialPort *serialPort, const char *cmd) {
         string result = ExeCmd(cmd);
         cout << "[ExecuteCommand] send result via tty:" << result << endl; 
         size_t bytes_wrote = serialPort->tty->write(result);
+        serialPort->tty->write("\n\nDONE\n\n");
+        serialPort->tty->flushOutput();
         cout << "[" << GetTimeStr() << "] Bytes written(tty): ";
         cout << bytes_wrote << endl;
     }

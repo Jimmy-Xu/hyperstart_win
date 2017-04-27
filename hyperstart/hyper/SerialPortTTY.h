@@ -22,6 +22,6 @@ void EnumerateSerialPorts();
 /* Start Send Data via SerialPort */
 int CreateSerialPort(struct SerialPort *serialPort);
 int OpenSerialPort(struct SerialPort *serialPort);
-int SendReadyStr(struct SerialPort *serialPort);
+int SendReadyStr(serial::Serial *pPort, char *pName);
 int ReceiveCommand(struct SerialPort *serialPort);
 int SendCmdResult(SerialPort *serialPort, const char *cmd);
