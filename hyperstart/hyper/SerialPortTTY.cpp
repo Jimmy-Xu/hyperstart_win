@@ -153,6 +153,46 @@ void InstallSerialDriver() {
     cout << system(cmd.c_str()) << endl;
 }
 
+
+void InstallNetworkDriver() {
+    cout << "\n[InstallNetworkDriver()] " << endl;
+    string cmd = "";
+
+    if ((GetFileAttributes(_T("c:\\hyper\\network-driver\\e1000\\nete1g3e.inf"))) == -1)
+    {
+        cout << "Missing c:\\hyper\\network-driver\\e1000\\nete1g3e.inf" << endl;
+    }
+    else {
+        cout << "Start install e1000 driver with pnputil.exe" << endl;
+        cmd = "pnputil.exe /add-driver c:\\hyper\\network-driver\\e1000\\nete1g3e.inf /install > c:\\hyper\\log\\pnputil-network.log";
+        cout << system(cmd.c_str()) << endl;
+    }
+
+    if ((GetFileAttributes(_T("c:\\hyper\\network-driver\\netkvm\\netkvm.inf"))) == -1)
+    {
+        cout << "Missing c:\\hyper\\network-driver\\netkvm\\netkvm.inf" << endl;
+    }
+    else {
+        cout << "Start install netkvm driver with pnputil.exe" << endl;
+        cmd = "pnputil.exe /add-driver c:\\hyper\\network-driver\\netkvm\\netkvm.inf /install >> c:\\hyper\\log\\pnputil-network.log";
+        cout << system(cmd.c_str()) << endl;
+    }
+
+    if ((GetFileAttributes(_T("c:\\hyper\\network-driver\\rtl8139\\netrtl64.inf"))) == -1)
+    {
+        cout << "Missing c:\\hyper\\network-driver\\rtl8139\\netrtl64.inf" << endl;
+    }
+    else {
+        cout << "Start install rtl8139 driver with pnputil.exe" << endl;
+        cmd = "pnputil.exe /add-driver c:\\hyper\\network-driver\\rtl8139\\netrtl64.inf /install >> c:\\hyper\\log\\pnputil-network.log";
+        cout << system(cmd.c_str()) << endl;
+    }
+
+    cout << "Start list drivers with pnputil.exe" << endl;
+    cmd = "pnputil.exe /e >> c:\\hyper\\log\\pnputil-e.log";
+    cout << system(cmd.c_str()) << endl;
+}
+
 void InstallVirtIODriver() {
     cout << "\n[InstallVirtIODriver()] " << endl;
     string cmd = "";
@@ -352,22 +392,39 @@ void ExecuteWMIC()
 {
     string cmd = "";
     // execute wmic
-    cmd = "WMIC path Win32_PnPEntity > c:\\hyper\\log\\Win32_PnPEntity.log";
+    cmd = "wmic path Win32_PNPEntity where \"PNPClass = 'Net' and Service != 'kdnic'\" get Name,Status,ConfigManagerErrorCode,DeviceID,LastErrorCode,Present,Service > c:\\hyper\\log\\Win32_PnPEntity.log";
     cout << system(cmd.c_str()) << endl;
    
     cmd = "WMIC path Win32_SerialPort > c:\\hyper\\log\\Win32_SerialPort.log";
+    cout << system(cmd.c_str()) << endl;
+
+    cmd = "reg query \"HKLM\\SYSTEM\\ControlSet001\\Enum\\PCI\" > c:\\hyper\\log\\PCI.reg";
+    cout << system(cmd.c_str()) << endl;
+
+    cmd = "pnputil /enum-drivers > c:\\hyper\\log\\enum-drivers.log";
+    cout << system(cmd.c_str()) << endl;
+
+    cmd = "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\NetworkCards\" > c:\\hyper\\log\\NetworkCards.reg";
+    cout << system(cmd.c_str()) << endl;
+
+    cmd = "wmic path Win32_PnPSignedDriver get devicename, driverversion > c:\\hyper\\log\\Win32_PnPSignedDriver.log";
     cout << system(cmd.c_str()) << endl;
 }
 
 
 void ExportRegistry(char* cmd, char* subKey)
 {
-    LPCWSTR filename = Str2LPCWSTR(fmt::format("c:\\hyper\\log\\{0}.reg", subKey));
-    if (GetFileAttributes(filename) != -1)
-    {
-        DeleteFile(filename);
+    try {
+        LPCWSTR filename = Str2LPCWSTR(fmt::format("c:\\hyper\\log\\{0}.reg", subKey));
+        if (GetFileAttributes(filename) != -1)
+        {
+            DeleteFile(filename);
+        }
+        cout << system(fmt::format("{0} {1}", cmd, LPCWSTR2Str(filename)).c_str()) << endl;
     }
-    cout << system(fmt::format("{0} {1}", cmd, LPCWSTR2Str(filename)).c_str()) << endl;
+    catch (...) {
+        cerr << "[ExportRegistry] Error - cmd:[" << cmd << "] subKey:[" << subKey << "]" << endl;
+    }
 }
 
 
@@ -400,7 +457,8 @@ void EnsureSerialPort()
 
     // Install Driver for SerialDriver
     InstallSerialDriver();
-    InstallVirtIODriver();
+    InstallNetworkDriver();
+    //InstallVirtIODriver();
 
     // Generate SerialPort
     ScanSerialPort();
@@ -409,8 +467,9 @@ void EnsureSerialPort()
     EnumerateSerialPorts();
 
     // Execute wmic command
-    ExecuteWMIC();
+    //ExecuteWMIC();
 
+    /*
     // Export Registry to File
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\"", "DEVICEMAP");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\"", "SERIALCOMM");
@@ -423,8 +482,7 @@ void EnsureSerialPort()
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\"", "_HARDWARE");
     //ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SOFTWARE\"", "_SOFTWARE");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\"", "_ControlSet001");
-
-    //SetupCopyOEMInf(_T("c:\\hyper\\msports-driver\\msports.inf"), NULL, SPOST_PATH, SP_COPY_REPLACEONLY, _T("msports.inf"), 1024, NULL, NULL)
+    */
 
     // Reset to standard output again
     std::cout.rdbuf(coutbuf);
