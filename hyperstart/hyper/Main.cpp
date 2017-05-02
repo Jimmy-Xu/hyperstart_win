@@ -118,22 +118,28 @@ int wmain(int argc, wchar_t *argv[])
     wprintf(L"\nChecking SerialPort...\n");
     EnsureSerialPort();
 
-    if (argc == 3) {
-        wprintf(L"Starting HyperStartService:\n");
-        CHyperStartService service(SERVICE_NAME);
-        if (!CServiceBase::Run(service))
-        {
-            wprintf(L"Service failed to run w/err 0x%08lx\n", GetLastError());
-            std::cout << GetLastErrorAsString().c_str() << std::endl;
-            ErrorExit(TEXT("CServiceBase::Run"));
-        }
-        else {
-            wprintf(L"HyperStartService Started\n");
-        }
-    }
-    else if ((argc > 1) && ((*argv[1] == L'-' || (*argv[1] == L'/'))))
+    if ((argc > 1) && ((*argv[1] == L'-' || (*argv[1] == L'/'))))
     {
-        if (_wcsicmp(L"install", argv[1] + 1) == 0)
+        if (_wcsicmp(L"HyperStartService", argv[1] + 1) == 0) {
+            std::ofstream outlog("c:\\hyper\\log\\HyperStartService.log", std::fstream::app); //append mode
+            std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+            std::cout.rdbuf(outlog.rdbuf()); //redirect std::cout to serial.log!
+
+            std::cout << "Starting HyperStartService:\n" << std::endl;
+            CHyperStartService service(SERVICE_NAME);
+            if (!CServiceBase::Run(service))
+            {
+                std::cout << "Service failed to run w/err" << GetLastError() << std::endl;
+                std::cout << GetLastErrorAsString().c_str() << std::endl;
+                ErrorExit(TEXT("CServiceBase::Run"));
+            }
+            else {
+                std::cout << "HyperStartService Started\n" << std::endl;
+            }
+            // Reset to standard output again
+            std::cout.rdbuf(coutbuf);
+        }
+        else if (_wcsicmp(L"install", argv[1] + 1) == 0)
         {
             // Install the service when the command is 
             // "-install" or "/install".
@@ -143,9 +149,7 @@ int wmain(int argc, wchar_t *argv[])
                 SERVICE_START_TYPE,         // Service start type
                 SERVICE_DEPENDENCIES,       // Dependencies
                 SERVICE_ACCOUNT,            // Service running account
-                SERVICE_PASSWORD,           // Password of the account
-                DEFAULT_COM_PORT,           // Serial Port Number
-                DEFAULT_COM_BAUD            // Serial Port Baud
+                SERVICE_PASSWORD           // Password of the account
                 );
         }
         else if (_wcsicmp(L"remove", argv[1] + 1) == 0)
@@ -158,8 +162,8 @@ int wmain(int argc, wchar_t *argv[])
     else
     {
         wprintf(L"\nParameters:\n");
-        wprintf(L" <COM> <BAUD>            start service.\n");
-        wprintf(L" -install <COM> <BAUD>   to install the service.\n");
+        wprintf(L" -HyperStartService      start as windows service.\n");
+        wprintf(L" -install                to install the service.\n");
         wprintf(L" -remove                 to remove the service.\n");
     }
 

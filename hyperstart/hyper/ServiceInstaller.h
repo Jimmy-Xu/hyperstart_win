@@ -27,9 +27,7 @@ void InstallService(PWSTR pszServiceName,
                     DWORD dwStartType,
                     PWSTR pszDependencies, 
                     PWSTR pszAccount, 
-                    PWSTR pszPassword,
-                    PWSTR pszComPort,
-                    PWSTR pszComBaud);
+                    PWSTR pszPassword);
 
 
 //

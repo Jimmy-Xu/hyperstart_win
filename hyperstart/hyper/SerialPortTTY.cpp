@@ -135,9 +135,8 @@ void SetFriendlyName(TCHAR *sActive, int i, TCHAR *pPortName) {
 }
 
 void InstallSerialDriver() {
-    cout << "\n[InstallSerialDrive()] " << endl;
+    cout << "\n[InstallSerialDrive()] Begin" << endl;
     string cmd = "";
-
     if ((GetFileAttributes(_T("c:\\hyper\\msports-driver\\msports.inf"))) == -1)
     {
         cout << "Missing c:\\hyper\\msports-driver\\msports.inf" << endl;
@@ -147,16 +146,14 @@ void InstallSerialDriver() {
         cmd = "pnputil.exe /add-driver c:\\hyper\\msports-driver\\msports.inf /install > c:\\hyper\\log\\pnputil-msport.log";
         cout << system(cmd.c_str()) << endl;
     }
-
-    cout << "Start list drivers with pnputil.exe" << endl;
-    cmd = "pnputil.exe /e > c:\\hyper\\log\\pnputil-e.log";
-    cout << system(cmd.c_str()) << endl;
+    cout << "\n[InstallSerialDrive()] End" << endl;
 }
 
 
 void InstallNetworkDriver() {
-    cout << "\n[InstallNetworkDriver()] " << endl;
+    cout << "\n[InstallNetworkDriver()] Begin" << endl;
     string cmd = "";
+
 
     if ((GetFileAttributes(_T("c:\\hyper\\network-driver\\e1000\\nete1g3e.inf"))) == -1)
     {
@@ -164,17 +161,17 @@ void InstallNetworkDriver() {
     }
     else {
         cout << "Start install e1000 driver with pnputil.exe" << endl;
-        cmd = "pnputil.exe /add-driver c:\\hyper\\network-driver\\e1000\\nete1g3e.inf /install > c:\\hyper\\log\\pnputil-network.log";
+        cmd = "pnputil.exe /add-driver c:\\hyper\\network-driver\\e1000\\nete1g3e.inf > c:\\hyper\\log\\pnputil-network.log";
         cout << system(cmd.c_str()) << endl;
     }
-
+    
     if ((GetFileAttributes(_T("c:\\hyper\\network-driver\\netkvm\\netkvm.inf"))) == -1)
     {
         cout << "Missing c:\\hyper\\network-driver\\netkvm\\netkvm.inf" << endl;
     }
     else {
         cout << "Start install netkvm driver with pnputil.exe" << endl;
-        cmd = "pnputil.exe /add-driver c:\\hyper\\network-driver\\netkvm\\netkvm.inf /install >> c:\\hyper\\log\\pnputil-network.log";
+        cmd = "pnputil.exe /add-driver c:\\hyper\\network-driver\\netkvm\\netkvm.inf >> c:\\hyper\\log\\pnputil-network.log";
         cout << system(cmd.c_str()) << endl;
     }
 
@@ -184,17 +181,15 @@ void InstallNetworkDriver() {
     }
     else {
         cout << "Start install rtl8139 driver with pnputil.exe" << endl;
-        cmd = "pnputil.exe /add-driver c:\\hyper\\network-driver\\rtl8139\\netrtl64.inf /install >> c:\\hyper\\log\\pnputil-network.log";
+        cmd = "pnputil.exe /add-driver c:\\hyper\\network-driver\\rtl8139\\netrtl64.inf >> c:\\hyper\\log\\pnputil-network.log";
         cout << system(cmd.c_str()) << endl;
     }
 
-    cout << "Start list drivers with pnputil.exe" << endl;
-    cmd = "pnputil.exe /e >> c:\\hyper\\log\\pnputil-e.log";
-    cout << system(cmd.c_str()) << endl;
+    cout << "\n[InstallNetworkDriver()] End" << endl;
 }
 
 void InstallVirtIODriver() {
-    cout << "\n[InstallVirtIODriver()] " << endl;
+    cout << "\n[InstallVirtIODriver()] Begin" << endl;
     string cmd = "";
 
     if ((GetFileAttributes(_T("c:\\hyper\\virtio-win\\vioserial\\2k16\\amd64\\vioser.inf"))) == -1)
@@ -203,30 +198,28 @@ void InstallVirtIODriver() {
     }
     else {
         cout << "Start install virtio driver with pnputil.exe" << endl;
-        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\Balloon\\2k16\\amd64\\balloon.inf /install > c:\\hyper\\log\\pnputil-virtio.log";
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\Balloon\\2k16\\amd64\\balloon.inf > c:\\hyper\\log\\pnputil-virtio.log";
         cout << system(cmd.c_str()) << endl;
-        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\NetKVM\\2k16\\amd64\\netkvm.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\NetKVM\\2k16\\amd64\\netkvm.inf >> c:\\hyper\\log\\pnputil-virtio.log";
         cout << system(cmd.c_str()) << endl;
-        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\pvpanic\\2k16\\amd64\\pvpanic.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\pvpanic\\2k16\\amd64\\pvpanic.inf >> c:\\hyper\\log\\pnputil-virtio.log";
         cout << system(cmd.c_str()) << endl;
-        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\vioinput\\2k16\\amd64\\vioinput.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\vioinput\\2k16\\amd64\\vioinput.inf >> c:\\hyper\\log\\pnputil-virtio.log";
         cout << system(cmd.c_str()) << endl;
-        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\viorng\\2k16\\amd64\\viorng.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\viorng\\2k16\\amd64\\viorng.inf >> c:\\hyper\\log\\pnputil-virtio.log";
         cout << system(cmd.c_str()) << endl;
-        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\vioscsi\\2k16\\amd64\\vioscsi.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\vioscsi\\2k16\\amd64\\vioscsi.inf >> c:\\hyper\\log\\pnputil-virtio.log";
         cout << system(cmd.c_str()) << endl;
-        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\vioserial\\2k16\\amd64\\vioser.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\vioserial\\2k16\\amd64\\vioser.inf >> c:\\hyper\\log\\pnputil-virtio.log";
         cout << system(cmd.c_str()) << endl;
-        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\viostor\\2k16\\amd64\\viostor.inf /install >> c:\\hyper\\log\\pnputil-virtio.log";
+        cmd = "pnputil /add-driver c:\\hyper\\virtio-win\\viostor\\2k16\\amd64\\viostor.inf >> c:\\hyper\\log\\pnputil-virtio.log";
         cout << system(cmd.c_str()) << endl;
     }
-    cout << "Start list drivers with pnputil.exe" << endl;
-    cmd = "pnputil.exe /e > c:\\hyper\\log\\pnputil-e.log";
-    cout << system(cmd.c_str()) << endl;
+    cout << "\n[InstallVirtIODriver()] End" << endl;
 }
 
 void CreateSERIALCOMM() {
-    cout << "\n[EnsureSERIALCOMM()] " << endl;
+    cout << "\n[EnsureSERIALCOMM()] Begin " << endl;
 
     HKEY hKey;
     //打开注册表键，不存在则创建它
@@ -238,11 +231,12 @@ void CreateSERIALCOMM() {
     else {
         cout << "Key " << TChar2Str(sActive).c_str() << " can not be created" << endl;;
     }
+    cout << "\n[EnsureSERIALCOMM()] End " << endl;
 }
 
 /* Add COM in HARDWARE\\DEVICEMAP\\SERIALCOMM */
 void AddComPort(int i, TCHAR *pPortName) {
-    cout << "\n[AddComPort()] " << TChar2Str(pPortName).c_str() << endl;
+    cout << "\n[AddComPort()] " << TChar2Str(pPortName).c_str() << "Begin" << endl;
 
     HKEY hKey = NULL;
     TCHAR sActive[128] = TEXT("HARDWARE\\DEVICEMAP\\SERIALCOMM");
@@ -273,6 +267,8 @@ void AddComPort(int i, TCHAR *pPortName) {
         cout << "Open Key " << TChar2Str(sActive).c_str() << " Failed:(" << endl;
     }
     RegCloseKey(hKey);
+
+    cout << "\n[AddComPort()] " << TChar2Str(pPortName).c_str() << "End" << endl;
 }
 
 // Generate COM name
@@ -287,7 +283,8 @@ TCHAR* getComName(int i) {
 
 /* Scan SerialPort by 'SYSTEM\\ControlSet001\\Enum\\ACPI\\PNP0501\\' */
 void ScanSerialPort() {
-    cout << "\n[ScanSerialPort()]" << endl;
+
+    cout << "\n[ScanSerialPort()] Begin" << endl;
     const int MAX_PORT = 5;
     static char* result[MAX_PORT];
 
@@ -304,7 +301,7 @@ void ScanSerialPort() {
 
     retReg = RegOpenKey(HKEY_LOCAL_MACHINE, sActive, &hKey);
     if (retReg == ERROR_SUCCESS) {
-        for (int i=1; i<= 5; i++) {
+        for (int i = 1; i <= 5; i++) {
             string curKey = fmt::format("{0}{1}\\Device Parameters\\", TChar2Str(sActive).c_str(), i);
             cout << "============================================================" << "\nScan Key: " << curKey.c_str() << endl;;
 
@@ -336,12 +333,14 @@ void ScanSerialPort() {
     }
     RegCloseKey(hKey_tmp);
     RegCloseKey(hKey);
+
+    cout << "\n[ScanSerialPort()] End" << endl;
 }
 
 
 /* Enumerate all Serial Ports */
 void EnumerateSerialPorts(){
-    cout << "\n[EnumerateSerialPorts()]" << endl;
+    cout << "\n[EnumerateSerialPorts] Begin" << endl;
     const int MAX_PORT = 5;
     static char* result[MAX_PORT];
 
@@ -386,15 +385,19 @@ void EnumerateSerialPorts(){
     }
     RegCloseKey(hKey_tmp);
     RegCloseKey(hKey);
+
+    cout << "\n[EnumerateSerialPorts] End" << endl;
 }
 
 void ExecuteWMIC()
 {
+    cout << "\n[ExecuteWMIC] Begin" << endl;
+    
     string cmd = "";
     // execute wmic
     cmd = "wmic path Win32_PNPEntity where \"PNPClass = 'Net' and Service != 'kdnic'\" get Name,Status,ConfigManagerErrorCode,DeviceID,LastErrorCode,Present,Service > c:\\hyper\\log\\Win32_PnPEntity.log";
     cout << system(cmd.c_str()) << endl;
-   
+
     cmd = "WMIC path Win32_SerialPort > c:\\hyper\\log\\Win32_SerialPort.log";
     cout << system(cmd.c_str()) << endl;
 
@@ -404,27 +407,28 @@ void ExecuteWMIC()
     cmd = "pnputil /enum-drivers > c:\\hyper\\log\\enum-drivers.log";
     cout << system(cmd.c_str()) << endl;
 
-    cmd = "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\NetworkCards\" > c:\\hyper\\log\\NetworkCards.reg";
-    cout << system(cmd.c_str()) << endl;
+    //cmd = "reg query \"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\NetworkCards\" > c:\\hyper\\log\\NetworkCards.reg";
+    //cout << system(cmd.c_str()) << endl;
 
-    cmd = "wmic path Win32_PnPSignedDriver get devicename, driverversion > c:\\hyper\\log\\Win32_PnPSignedDriver.log";
-    cout << system(cmd.c_str()) << endl;
+    //cmd = "wmic path Win32_PnPSignedDriver get devicename, driverversion > c:\\hyper\\log\\Win32_PnPSignedDriver.log";
+    //cout << system(cmd.c_str()) << endl;
+    
+    cout << "\n[ExecuteWMIC] End" << endl;
 }
 
 
 void ExportRegistry(char* cmd, char* subKey)
 {
-    try {
-        LPCWSTR filename = Str2LPCWSTR(fmt::format("c:\\hyper\\log\\{0}.reg", subKey));
-        if (GetFileAttributes(filename) != -1)
-        {
-            DeleteFile(filename);
-        }
-        cout << system(fmt::format("{0} {1}", cmd, LPCWSTR2Str(filename)).c_str()) << endl;
+    cout << "\n[ExportRegistry] Begin " << cmd << " - " << subKey << endl;
+   
+    LPCWSTR filename = Str2LPCWSTR(fmt::format("c:\\hyper\\log\\{0}.reg", subKey));
+    if (GetFileAttributes(filename) != -1)
+    {
+        DeleteFile(filename);
     }
-    catch (...) {
-        cerr << "[ExportRegistry] Error - cmd:[" << cmd << "] subKey:[" << subKey << "]" << endl;
-    }
+    cout << system(fmt::format("{0} {1}", cmd, LPCWSTR2Str(filename)).c_str()) << endl;
+    
+    cout << "\n[ExportRegistry] End " << cmd << " - " << subKey << endl;
 }
 
 
@@ -449,6 +453,8 @@ void EnsureSerialPort()
     std::cout.rdbuf(comlog.rdbuf()); //redirect std::cout to logfile!
     std::cerr.rdbuf(comlog.rdbuf()); //redirect std::cerr to logfile!
 
+    cout << "\n###### [EnsureSerialPort] Begin #####" << endl;
+
     // REF: https://social.technet.microsoft.com/Forums/windowsserver/en-US/382b9e64-4823-48f3-b847-1b50f38fd83d/windows-pe-serial-com-support?forum=winserversetup
     DefineDosDevice(0, COM_PORT_NAME(nPort), COM_PORT_DEV_NAME(nPort));
 
@@ -457,8 +463,12 @@ void EnsureSerialPort()
 
     // Install Driver for SerialDriver
     InstallSerialDriver();
-    InstallNetworkDriver();
+    //InstallNetworkDriver();
     //InstallVirtIODriver();
+
+    // list all drivers
+    cout << "Start list all drivers with pnputil.exe" << endl;
+    cout << system( "pnputil.exe /e > c:\\hyper\\log\\pnputil-e.log" ) << endl;
 
     // Generate SerialPort
     ScanSerialPort();
@@ -467,22 +477,24 @@ void EnsureSerialPort()
     EnumerateSerialPorts();
 
     // Execute wmic command
-    //ExecuteWMIC();
+    ExecuteWMIC();
 
-    /*
+   
     // Export Registry to File
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\"", "DEVICEMAP");
-    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\"", "SERIALCOMM");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Enum\\ACPI\"", "ACPI");
-    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Class\"", "Class");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\Serial\"", "Serial");
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM\"", "SERIALCOMM");
+    /*
+    ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Class\"", "Class");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\DRIVERS\\DriverDatabase\"", "DriverDatabase");
-
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\DRIVERS\"", "_DRIVERS");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\HARDWARE\"", "_HARDWARE");
     //ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SOFTWARE\"", "_SOFTWARE");
     ExportRegistry("reg export \"HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\"", "_ControlSet001");
     */
+
+    cout << "\n###### [EnsureSerialPort] End #####\n" << endl;
 
     // Reset to standard output again
     std::cout.rdbuf(coutbuf);
@@ -544,7 +556,7 @@ int OpenSerialPort(struct SerialPort *serialPort) {
         }
     }
     catch (...) {
-        cerr << "Operate Serial Port '" << port << "' Failed!" << endl;
+        cout << "Operate Serial Port '" << port << "' Failed!" << endl;
         result += 1; // 01
     }
 
@@ -559,7 +571,7 @@ int OpenSerialPort(struct SerialPort *serialPort) {
         }
     }
     catch (...) {
-        cerr << "Operate Serial Port '" << port << "' Failed!" << endl;
+        cout << "Operate Serial Port '" << port << "' Failed!" << endl;
         result += 2; // 10
     }
     return result;
@@ -583,7 +595,7 @@ int SendReadyStr(serial::Serial *pPort, char *pName) {
         cout << "[" << GetTimeStr() << "] Bytes written(ctl): " << bytes_wrote << endl;
     }
     catch (...) {
-        cerr << "Send Ready via " << pName << " failed" << endl;
+        cout << "Send Ready via " << pName << " failed" << endl;
         if (pName == "ctl")
             result += 1;
         else if (pName == "tty") {
@@ -608,7 +620,7 @@ int ReceiveCommand(struct SerialPort *serialPort)
         }
     }
     catch (...) {
-        cerr << "[ReceiveCommand] receive command via ctl failed" << endl;
+        cout << "[ReceiveCommand] receive command via ctl failed" << endl;
         return 1;
     }
     //cout << "[End] SerialPortCommunicate" << endl;
@@ -653,7 +665,7 @@ string ExeCmd(const char *pszCmd)
     HANDLE hRead, hWrite;
     if (!CreatePipe(&hRead, &hWrite, &sa, 0))
     {
-        cerr << "[ExeCmd] CreatePipe failed" << endl;
+        cout << "[ExeCmd] CreatePipe failed" << endl;
         return "";
     }
 
@@ -669,7 +681,7 @@ string ExeCmd(const char *pszCmd)
     PROCESS_INFORMATION pi;
     if (!CreateProcess(NULL, CStr2WStr(pszCmd), NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))
     {
-        cerr << "[ExeCmd] CreateProcess failed" << endl;
+        cout << "[ExeCmd] CreateProcess failed" << endl;
         return "";
     }
 
@@ -701,7 +713,7 @@ int SendCmdResult(SerialPort *serialPort, const char *cmd) {
         cout << bytes_wrote << endl;
     }
     catch (...) {
-        cerr << "[ExecuteCommand] send result via tty failed" << endl;
+        cout << "[ExecuteCommand] send result via tty failed" << endl;
         return 1;
     }
     return 0;
