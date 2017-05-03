@@ -87,7 +87,7 @@ void CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
 
     // TODO(Olster): Read this path from registry of from command line arguments.
     // This doesn't create non-existent dirs.
-    m_logFile.open("c:\\hyper\\hyperstart.log");
+    m_logFile.open("c:\\hyper\\log\\3_OnStart.log");
 
     if (!m_logFile.is_open()) {
         WriteErrorLogEntry(L"Can't open log file", EVENTLOG_ERROR_TYPE);
@@ -103,7 +103,7 @@ void CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
         struct tm time_info;
         localtime_s(&time_info, &calendar_time);
         strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", &time_info);
-        m_logFile << fmt::format("{0} : HyperStartService Started", buffer).c_str() << endl;
+        m_logFile << fmt::format("{0} - [OnStart] HyperStartService Started", buffer).c_str() << endl;
 
         //write arguments to logfile
         for (unsigned int i = 0; i < dwArgc; ++i)
@@ -116,9 +116,12 @@ void CHyperStartService::OnStart(DWORD dwArgc, LPWSTR *lpszArgv)
     WriteEventLogEntry(L"HyperStartService in OnStart", EVENTLOG_INFORMATION_TYPE);
 
     // list all available serial port
-    EnumerateSerialPorts();
+    m_logFile << GetTimeStr() << " - [OnStart] EnumerateSerialPorts";
+    EnumerateSerialPorts(&m_logFile);
 
     // Queue the main service function for execution in a worker thread.
+    m_logFile << GetTimeStr() << " - [OnStart] Start ServiceWorkerThread...";
+    m_logFile.close();
     CThreadPool::QueueUserWorkItem(&CHyperStartService::ServiceWorkerThread, this);
 }
 
@@ -133,13 +136,9 @@ void CHyperStartService::ServiceWorkerThread(void)
 {
     WriteEventLogEntry(L"Enter ServiceWorkerThread", EVENTLOG_INFORMATION_TYPE);
 
-    std::ofstream outlog(fmt::format("c:\\hyper\\log\\serial.log"), std::fstream::app); //append mode
+    std::ofstream outlog(fmt::format("c:\\hyper\\log\\4_WorkerThread.log"), std::fstream::app); //append mode
     std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
     std::cout.rdbuf(outlog.rdbuf()); //redirect std::cout to serial.log!
-
-    std::ofstream errlog(fmt::format("c:\\hyper\\log\\serial.err"), std::fstream::app); //append mode
-    std::streambuf *cerrbuf = std::cerr.rdbuf(); //save old buf
-    std::cerr.rdbuf(errlog.rdbuf()); //redirect std::cerr to serial.err!
 
     // Periodically check if the service is stopping.
     int rlt;
@@ -162,7 +161,6 @@ void CHyperStartService::ServiceWorkerThread(void)
 
     // Reset to standard output again
     std::cout.rdbuf(coutbuf);
-    std::cerr.rdbuf(cerrbuf);
 
     WriteEventLogEntry(L"Exit ServiceWorkerThread", EVENTLOG_INFORMATION_TYPE);
     // Signal the stopped event.

@@ -37,6 +37,12 @@
 
 #define DEFAULT_COM_BAUD         L"115200"
 
+#ifdef UNICODE
+using tofstream = std::wofstream;
+#else
+using tofstream = std::ofstream;
+#endif
+
 
 std::string GetLastErrorAsString()
 {
@@ -110,37 +116,46 @@ int wmain(int argc, wchar_t *argv[])
     if (GetFileAttributes(logdir) == -1)
     {
         if (CreateDirectory(logdir, NULL) == -1) {
-            wprintf(L"\nCreate logdir failed...\n");
+            wprintf(L"\n[Main] Create logdir failed...\n");
             return -1;
         }
     }
 
-    wprintf(L"\nChecking SerialPort...\n");
-    EnsureSerialPort();
-
     if ((argc > 1) && ((*argv[1] == L'-' || (*argv[1] == L'/'))))
     {
         if (_wcsicmp(L"HyperStartService", argv[1] + 1) == 0) {
-            std::ofstream outlog("c:\\hyper\\log\\HyperStartService.log", std::fstream::app); //append mode
-            std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-            std::cout.rdbuf(outlog.rdbuf()); //redirect std::cout to serial.log!
 
-            std::cout << "Starting HyperStartService:\n" << std::endl;
-            CHyperStartService service(SERVICE_NAME);
-            if (!CServiceBase::Run(service))
-            {
-                std::cout << "Service failed to run w/err" << GetLastError() << std::endl;
-                std::cout << GetLastErrorAsString().c_str() << std::endl;
-                ErrorExit(TEXT("CServiceBase::Run"));
+            wprintf(L"\n[Main] Checking SerialPort...\n");
+            EnsureSerialPort();
+
+            tofstream m_logFile;
+            m_logFile.close();
+            m_logFile.open("c:\\hyper\\log\\2_Main.log");
+
+            if (m_logFile.is_open()) {
+                //write time to logfile
+
+                m_logFile << GetTimeStr() << " - [Main] Start to Run HyperStartService:\n" << std::endl;
+                CHyperStartService service(SERVICE_NAME);
+                if (!CServiceBase::Run(service))
+                {
+                    m_logFile << GetTimeStr() << " - [Main] Run HyperStartService failed: w/err" << GetLastError() << std::endl;
+                    m_logFile << GetLastErrorAsString().c_str() << std::endl;
+                    //ErrorExit(TEXT("CServiceBase::Run"));
+                }
+                else {
+                    m_logFile << GetTimeStr() << " - [Main] HyperStartService Exit\n" << std::endl;
+                }
             }
             else {
-                std::cout << "HyperStartService Started\n" << std::endl;
+                std::cerr << "[Main] Can't open log file, failed to start HyperStartService" << std::endl;
             }
-            // Reset to standard output again
-            std::cout.rdbuf(coutbuf);
         }
         else if (_wcsicmp(L"install", argv[1] + 1) == 0)
         {
+            wprintf(L"\n[Main] Checking SerialPort...\n");
+            EnsureSerialPort();
+
             // Install the service when the command is 
             // "-install" or "/install".
             InstallService(
