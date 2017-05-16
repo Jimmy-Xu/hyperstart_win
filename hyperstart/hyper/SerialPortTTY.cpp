@@ -146,6 +146,10 @@ void InstallDriver() {
     cmd = "pnputil.exe /add-driver c:\\drivers\\network-driver\\*.inf /subdirs /install > c:\\hyper\\log\\pnputil-network.log";
     cout << system(cmd.c_str()) << endl;
 
+    cout << "\n" << GetTimeStr() << " - [InstallDriver] Start install bus drivers with pnputil.exe" << endl;
+    cmd = "pnputil.exe /add-driver c:\\drivers\\bus-driver\\*.inf /subdirs /install > c:\\hyper\\log\\pnputil-bus.log";
+    cout << system(cmd.c_str()) << endl;
+
     cout << "\n" << GetTimeStr() << " - [InstallDriver()] End" << endl;
 }
 
