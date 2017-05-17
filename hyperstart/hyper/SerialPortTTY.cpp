@@ -12,6 +12,7 @@
 // for AddSerialPort
 #define COM_PORT_DEV_NAME(n)  TEXT("\\\\?\\ACPI#PNP0501#") TEXT(#n) TEXT("#{4D36E978-E325-11CE-BFC1-08002BE10318}")
 #define COM_PORT_NAME(n)      TEXT("COM") TEXT(#n)
+#define MAXWAIT               60000
 
 using namespace std;
 
@@ -690,7 +691,7 @@ string ExeCmd(const char *pszCmd)
     if (!CreatePipe(&hRead, &hWrite, &sa, 0))
     {
         cout << "[ExeCmd] CreatePipe failed" << endl;
-        return "";
+        return "\n[ExeCmd] CreatePipe failed\n";
     }
 
     //设置命令行进程启动信息(以隐藏方式启动命令并定位其输出到hWrite)
@@ -706,7 +707,29 @@ string ExeCmd(const char *pszCmd)
     if (!CreateProcess(NULL, CStr2WStr(pszCmd), NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))
     {
         cout << "[ExeCmd] CreateProcess failed" << endl;
-        return "";
+        return "\n[ExeCmd] CreateProcess failed\n";
+    }
+    else
+    {
+        DWORD retVal = WaitForSingleObject(pi.hProcess, MAXWAIT);
+        if (retVal == WAIT_TIMEOUT)
+        {
+            if (TerminateProcess(pi.hProcess, 0)) {
+                // Success 
+                CloseHandle(pi.hThread);
+                CloseHandle(pi.hProcess);
+                cout << "[ExeCmd] CreateProcess timeout, terminate OK" << endl;
+                return "\n[ExeCmd] CreateProcess timeout, terminate OK\n";
+            }
+            else 
+            {
+                // Failed to terminate process
+                CloseHandle(pi.hThread);
+                CloseHandle(pi.hProcess);
+                cout << "[ExeCmd] CreateProcess timeout, terminate failed" << endl;
+                return "\n[ExeCmd] CreateProcess timeout, terminate failed\n";
+            }
+        }
     }
 
     //立即关闭hWrite
@@ -732,7 +755,7 @@ int SendCmdResult(SerialPort *serialPort, const char *cmd) {
         cout << "[ExecuteCommand] send result via tty:" << result << endl; 
         size_t bytes_wrote = serialPort->tty->write(result);
         serialPort->tty->write("\n\nDONE\n\n");
-        serialPort->tty->flushOutput();
+        //serialPort->tty->flush();
         cout << "[" << GetTimeStr() << "] Bytes written(tty): ";
         cout << bytes_wrote << endl;
     }
