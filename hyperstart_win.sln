@@ -18,6 +18,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_fmt", "fmt\test_fmt.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "addcom", "addcom\addcom.vcxproj", "{4A8190E0-E281-43FF-AA95-9747E194A937}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iftool", "iftool\iftool.vcxproj", "{204F5C82-AF70-4A3A-9005-291E2D80B9AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +86,14 @@ Global
 		{4A8190E0-E281-43FF-AA95-9747E194A937}.Release|Win32.ActiveCfg = Release|x64
 		{4A8190E0-E281-43FF-AA95-9747E194A937}.Release|x64.ActiveCfg = Release|x64
 		{4A8190E0-E281-43FF-AA95-9747E194A937}.Release|x64.Build.0 = Release|x64
+		{204F5C82-AF70-4A3A-9005-291E2D80B9AF}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{204F5C82-AF70-4A3A-9005-291E2D80B9AF}.Debug|Win32.ActiveCfg = Debug|x64
+		{204F5C82-AF70-4A3A-9005-291E2D80B9AF}.Debug|x64.ActiveCfg = Debug|x64
+		{204F5C82-AF70-4A3A-9005-291E2D80B9AF}.Debug|x64.Build.0 = Debug|x64
+		{204F5C82-AF70-4A3A-9005-291E2D80B9AF}.Release|Any CPU.ActiveCfg = Release|x64
+		{204F5C82-AF70-4A3A-9005-291E2D80B9AF}.Release|Win32.ActiveCfg = Release|x64
+		{204F5C82-AF70-4A3A-9005-291E2D80B9AF}.Release|x64.ActiveCfg = Release|x64
+		{204F5C82-AF70-4A3A-9005-291E2D80B9AF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
