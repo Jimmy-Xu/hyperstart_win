@@ -13,6 +13,8 @@
 #define COM_PORT_DEV_NAME(n)  TEXT("\\\\?\\ACPI#PNP0501#") TEXT(#n) TEXT("#{4D36E978-E325-11CE-BFC1-08002BE10318}")
 #define COM_PORT_NAME(n)      TEXT("COM") TEXT(#n)
 #define MAXWAIT               60000
+#define BUFFER_SIZE           1048576
+#define BLOCK_SIZE            65535
 
 using namespace std;
 
@@ -688,7 +690,7 @@ string ExeCmd(const char *pszCmd)
     //创建匿名管道
     SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };
     HANDLE hRead, hWrite;
-    if (!CreatePipe(&hRead, &hWrite, &sa, 0))
+    if (!CreatePipe(&hRead, &hWrite, &sa, BUFFER_SIZE))
     {
         cout << "[ExeCmd] CreatePipe failed" << endl;
         return "\n[ExeCmd] CreatePipe failed\n";
@@ -737,9 +739,9 @@ string ExeCmd(const char *pszCmd)
 
     //读取命令行返回值
     std::string strRet;
-    char buff[1024] = { 0 };
+    char buff[4096] = { 0 };
     DWORD dwRead = 0;
-    while (ReadFile(hRead, buff, 1024, &dwRead, NULL))
+    while (ReadFile(hRead, buff, 4096, &dwRead, NULL))
     {
         strRet.append(buff, dwRead);
     }
@@ -752,12 +754,19 @@ int SendCmdResult(SerialPort *serialPort, const char *cmd) {
     try {
         cout << "[ExecuteCommand] execute command:" << cmd << endl;
         string result = ExeCmd(cmd);
-        cout << "[ExecuteCommand] send result via tty:" << result << endl; 
-        size_t bytes_wrote = serialPort->tty->write(result);
+        int group = (int)ceil((double)result.length() / BLOCK_SIZE);
+        cout << "[ExecuteCommand] send result via tty - size:" << result.length() << " group:" << group << "\n" << result << endl;
+        for (int i = 0; i < group; i++) {
+            char splitter[256];
+            sprintf(splitter, "\n----------%d----------\n", i);
+            cout<< splitter << endl;
+            //serialPort->tty->write(splitter);
+            size_t bytes_wrote = serialPort->tty->write(result.substr(i * BLOCK_SIZE, BLOCK_SIZE));
+            serialPort->tty->flush();
+            cout << "[" << GetTimeStr() << "] Bytes written(tty): ";
+            cout << bytes_wrote << endl;
+        }
         serialPort->tty->write("\n\nDONE\n\n");
-        //serialPort->tty->flush();
-        cout << "[" << GetTimeStr() << "] Bytes written(tty): ";
-        cout << bytes_wrote << endl;
     }
     catch (...) {
         cout << "[ExecuteCommand] send result via tty failed" << endl;
